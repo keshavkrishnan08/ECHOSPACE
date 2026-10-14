@@ -157,6 +157,18 @@ export interface ReconstructionFrame {
   groundTruthOccupancy: Uint8Array | null;
   features: LinkFeatures;
   csi: CsiSnapshot | null;
+  /** Timing and coherence diagnostics for the selected link over this frame window. */
+  linkDiagnostics: {
+    linkIndex: number;
+    /** Inter-arrival intervals of aligned packet timestamps, ms. */
+    intervalsMs: Float32Array;
+    /** Mean normalized correlation |<H_t, H_t-1>| / (|H_t||H_t-1|) of consecutive sanitized CSI (0–1). */
+    coherence: number | null;
+    reconstructedTimestamps: number;
+    sequenceGaps: number;
+    jitterMs: number | null;
+    packets: number;
+  } | null;
   /** One spectrogram column (Doppler power, dB) per frame for the selected link. */
   dopplerColumn: Float32Array | null;
   dopplerFreqsHz: Float32Array | null;

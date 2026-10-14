@@ -113,7 +113,7 @@ export class Pipeline {
     this.lastPacket = source.links.map(() => null);
     this.selectedLink = Math.min(opts.selectedLink ?? 0, Math.max(0, this.L - 1));
     const trailFrames = Math.round(cfg.privacy.trackHistorySeconds * cfg.dsp.frameRateHz);
-    this.tracker = new Tracker(cfg.tracking, deriveSeed(cfg.seed, 99, Date.now() & 0xffff), trailFrames);
+    this.tracker = new Tracker(cfg.tracking, deriveSeed(cfg.seed, 99, 0), trailFrames);
     this.configHash = stableHash(cfg);
     if (source.geometryKnown && this.L > 0) this.rti = new RtiModel(this.grid, source.links, cfg.recon);
     this.stage = Object.fromEntries(
@@ -262,8 +262,10 @@ export class Pipeline {
     let gaps = 0;
     let jitterSum = 0;
     let jitterN = 0;
+    let selAlign: ReturnType<typeof alignLink> | null = null;
     for (let l = 0; l < L; l++) {
       const a = alignLink(byLink[l], rate);
+      if (l === this.selectedLink) selAlign = a;
       byLink[l] = a.packets;
       recon += a.reconstructedTimestamps;
       gaps += a.gaps;
@@ -620,6 +622,44 @@ export class Pipeline {
       }
     }
 
+    let linkDiagnostics: ReconstructionFrame["linkDiagnostics"] = null;
+    if (selAlign && this.selectedLink < L) {
+      const ps = selAlign.packets;
+      const intervals = new Float32Array(Math.max(0, ps.length - 1));
+      for (let i = 1; i < ps.length; i++) intervals[i - 1] = (ps[i].timestampS - ps[i - 1].timestampS) * 1000;
+      const fs = frameSan[this.selectedLink];
+      let coh = 0;
+      let cn = 0;
+      for (let i = 1; i < fs.length; i++) {
+        let dr = 0;
+        let di = 0;
+        let na = 0;
+        let nb = 0;
+        const a = fs[i - 1];
+        const b = fs[i];
+        for (let q = 0; q < a.re.length; q++) {
+          if (a.re[q] !== a.re[q] || b.re[q] !== b.re[q]) continue;
+          dr += a.re[q] * b.re[q] + a.im[q] * b.im[q];
+          di += a.im[q] * b.re[q] - a.re[q] * b.im[q];
+          na += a.re[q] * a.re[q] + a.im[q] * a.im[q];
+          nb += b.re[q] * b.re[q] + b.im[q] * b.im[q];
+        }
+        if (na > 0 && nb > 0) {
+          coh += Math.hypot(dr, di) / Math.sqrt(na * nb);
+          cn++;
+        }
+      }
+      linkDiagnostics = {
+        linkIndex: this.selectedLink,
+        intervalsMs: intervals,
+        coherence: cn ? coh / cn : null,
+        reconstructedTimestamps: selAlign.reconstructedTimestamps,
+        sequenceGaps: selAlign.gaps,
+        jitterMs: Number.isFinite(selAlign.jitterMs) ? selAlign.jitterMs : null,
+        packets: ps.length,
+      };
+    }
+
     // 12. serialize
     t0 = now();
     const processingBeforeSerialize = now() - t0all;
@@ -652,6 +692,7 @@ export class Pipeline {
       groundTruthOccupancy: gtOcc,
       features: { rssDb, deltaRssDb, motionEnergy, snrEstDb: snrDb, deliveryRatio },
       csi,
+      linkDiagnostics,
       dopplerColumn,
       dopplerFreqsHz,
       stages: [],

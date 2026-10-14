@@ -67,7 +67,7 @@ export class RtiModel {
       for (let dj = -rj; dj <= rj; dj++)
         for (let di = -ri; di <= ri; di++) {
           const d = Math.hypot(di * sx, dj * sy, dk * sz);
-          if (d <= R) offs.push(di, dj, dk, this.priorVar * Math.exp(-d / cfg.priorCorrelationM));
+          if (d <= R + 1e-9) offs.push(di, dj, dk, this.priorVar * Math.exp(-d / cfg.priorCorrelationM));
         }
     this.cwT = new Float64Array(this.V * this.L);
     for (let l = 0; l < this.L; l++) {
