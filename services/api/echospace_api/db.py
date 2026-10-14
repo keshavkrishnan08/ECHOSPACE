@@ -246,6 +246,7 @@ class Experiment(TimestampMixin, Base):
     config_hash: Mapped[str] = mapped_column(String(16), index=True)
     replay_digest: Mapped[str | None] = mapped_column(String(64), nullable=True)
     replay_digest_frames: Mapped[int] = mapped_column(Integer, default=0)
+    live_run_reproducible: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
     machine: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
     tags: Mapped[list[Any]] = mapped_column(JSON, default=list)
     baseline_of: Mapped[str | None] = mapped_column(String(128), nullable=True)
