@@ -62,6 +62,8 @@ export const ExperimentRecord = z.object({
   summaries: z.array(MetricSummary).default([]),
   series: z.array(MetricSeries).default([]),
   events: z.array(z.object({ t: z.number(), kind: z.string(), message: z.string() })).default([]),
+  /** Mid-run reconfigurations, re-applied at the same frame during replay. */
+  configChanges: z.array(z.object({ frameSeq: z.number().int().min(0), t: z.number(), config: ScenarioConfig })).default([]),
   tags: z.array(z.string()).default([]),
   baselineOf: z.string().nullable().default(null),
 });

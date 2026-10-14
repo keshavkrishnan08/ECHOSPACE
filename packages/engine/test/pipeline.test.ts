@@ -102,3 +102,28 @@ describe("end-to-end pipeline (synthetic)", () => {
     expect(eng.pipeline).not.toBe(p);
   }, 60000);
 });
+
+describe("deterministic mid-run reconfiguration", () => {
+  it("a live change and a scheduled replay of it produce identical frames", () => {
+    const cfg = scenarioByKey("F")!.build();
+    const noisy = { ...cfg, signal: { ...cfg.signal, snrDb: 8 } };
+    const live = new EchoEngine(cfg);
+    const a: ReconstructionFrame[] = [];
+    // irregular wall-clock-like steps, change applied whenever the UI gets to it
+    let applied = -1;
+    while (live.simTime < 3) {
+      a.push(...live.advance(0.137, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY));
+      if (applied < 0 && live.framesProduced >= 12) applied = live.reconfigure(noisy);
+    }
+    const replay = new EchoEngine(cfg);
+    replay.schedule([{ frameSeq: applied, config: noisy }]);
+    const b: ReconstructionFrame[] = [];
+    while (replay.simTime < 3) b.push(...replay.advance(0.25, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY));
+    const n = Math.min(a.length, b.length);
+    expect(n).toBeGreaterThan(25);
+    for (let i = 0; i < n; i++) {
+      expect(b[i].seq).toBe(a[i].seq);
+      expect(Array.from(b[i].features.deltaRssDb)).toEqual(Array.from(a[i].features.deltaRssDb));
+    }
+  }, 60000);
+});

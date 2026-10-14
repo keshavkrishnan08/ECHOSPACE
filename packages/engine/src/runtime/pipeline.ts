@@ -409,7 +409,7 @@ export class Pipeline {
       const y = Float32Array.from(deltaRssDb, (x) => (Number.isFinite(x) ? Math.max(-3, Math.min(25, x)) : Number.NaN));
       const r = this.rti.reconstruct(y);
       image = r.image;
-      varianceRatio = r.varianceRatio;
+      varianceRatio = r.varianceRatio.slice();
       occupancy = r.occupancy;
       activeLinks = r.activeLinks;
       if (activeLinks < L) {

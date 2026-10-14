@@ -51,6 +51,7 @@ export class EchoEngine {
   framesProduced = 0;
   private calibratedSceneKey: string | null = null;
   readonly changeLog: Array<{ frameSeq: number; t: number; config: ScenarioConfig }> = [];
+  private scheduled: Array<{ frameSeq: number; config: ScenarioConfig }> = [];
 
   constructor(config: ScenarioConfig, readonly opts: EngineOptions = {}, source?: PacketSource) {
     this.config = config;
@@ -84,16 +85,25 @@ export class EchoEngine {
     return { depth: this.queue.length, capacity: this.queue.capacity, drops: this.queue.drops };
   }
 
-  /** Applies a new configuration mid-run, rebuilding only what the change requires. */
-  reconfigure(next: ScenarioConfig) {
+  /**
+   * Applies a new configuration at the next frame boundary, rebuilding only what the change
+   * requires. When the channel changes, packets already pulled from the old source are discarded
+   * and generation resumes right after the last processed frame, so the result depends only on
+   * (launch config, frame index of each change) — not on UI timing. Returns the frame index.
+   */
+  reconfigure(next: ScenarioConfig): number {
     const prev = this.config;
     this.config = next;
-    this.changeLog.push({ frameSeq: this.framesProduced, t: this.simTime, config: next });
+    const frameSeq = this.framesProduced;
+    const resumeT = this.nextFrameT - 1 / prev.dsp.frameRateHz;
+    this.changeLog.push({ frameSeq, t: resumeT, config: next });
     const rebuildPipeline = pipelineKey(prev) !== pipelineKey(next);
     if (this.source instanceof SyntheticSource && channelKey(prev) !== channelKey(next)) {
       const src = new SyntheticSource(next);
-      src.seek(this.simTime + 1e-9);
+      src.seek(resumeT + 1e-9);
       this.source = src;
+      this.queue.clear();
+      this.simTime = Math.max(0, resumeT);
     }
     if (prev.pipeline.queueDepth !== next.pipeline.queueDepth || prev.pipeline.dropPolicy !== next.pipeline.dropPolicy || rebuildPipeline) {
       this.queue = this.makeQueue(next);
@@ -105,6 +115,12 @@ export class EchoEngine {
     } else {
       this.pipeline.cfg = next;
     }
+    return frameSeq;
+  }
+
+  /** Queues configuration changes to apply when frame `frameSeq` is about to be produced (replay). */
+  schedule(changes: Array<{ frameSeq: number; config: ScenarioConfig }>) {
+    this.scheduled = [...changes].sort((a, b) => a.frameSeq - b.frameSeq);
   }
 
   setSelectedLink(i: number) {
@@ -122,6 +138,7 @@ export class EchoEngine {
     this.framesDropped = 0;
     this.framesProduced = 0;
     this.changeLog.length = 0;
+    this.scheduled = [];
     this.calibrate();
   }
 
@@ -148,6 +165,12 @@ export class EchoEngine {
       this.nextFrameT += skip * period;
     }
     while (this.nextFrameT <= this.simTime + 1e-9 && (frames.length === 0 || now() - t0 < budgetMs)) {
+      if (this.scheduled.length && this.scheduled[0].frameSeq <= this.framesProduced) {
+        this.reconfigure(this.scheduled.shift()!.config);
+        for (const p of this.source.pull(target)) this.queue.push({ p, enqueuedAtMs: enqMs, enqueuedPerf: enqPerf });
+        this.simTime = target;
+        continue;
+      }
       const window: CsiPacket[] = [];
       let oldestPerf = Number.POSITIVE_INFINITY;
       let newestMs = 0;
