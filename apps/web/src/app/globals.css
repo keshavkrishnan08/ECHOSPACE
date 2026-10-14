@@ -1,0 +1,77 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+
+@theme {
+  --color-bg: #080b12;
+  --color-surface: #0e1420;
+  --color-panel: #141c2a;
+  --color-panel-2: #1a2333;
+  --color-line: #273244;
+  --color-line-soft: #1c2534;
+  --color-fg: #edf3fc;
+  --color-muted: #8b9ab0;
+  --color-faint: #5c6b81;
+  --color-signal: #2dd4e6;
+  --color-geometry: #5b8def;
+  --color-track: #a78bfa;
+  --color-ok: #5fbf8f;
+  --color-warn: #e8b04b;
+  --color-err: #e5636a;
+  --color-truth: #f2f2f2;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 1px;
+}
+
+.grid-bg {
+  background-image:
+    linear-gradient(to right, rgb(39 50 68 / 0.25) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(39 50 68 / 0.25) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.pulse-dot {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-dot { animation: none; }
+}
