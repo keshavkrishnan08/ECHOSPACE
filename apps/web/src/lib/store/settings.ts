@@ -97,6 +97,7 @@ export const useSettings = create<SettingsState>()(
       name: "echospace.settings.v1",
       storage: createJSONStorage(() => localStorage),
       version: 1,
+      skipHydration: true,
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<SettingsState>;
         return { ...current, ...p, layers: { ...DEFAULT_LAYERS, ...(p.layers ?? {}) }, panels: { ...current.panels, ...(p.panels ?? {}) } };

@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useSession } from "@/lib/store/session";
+import { useSettings } from "@/lib/store/settings";
 import { CommandPalette } from "./CommandPalette";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { SaveExperimentDialog } from "./SaveExperimentDialog";
@@ -16,6 +17,7 @@ function Inner({ children }: { children: React.ReactNode }) {
   useGlobalShortcuts();
   const ensureBooted = useSession((s) => s.ensureBooted);
   useEffect(() => {
+    void useSettings.persist.rehydrate();
     ensureBooted();
   }, [ensureBooted]);
   return (

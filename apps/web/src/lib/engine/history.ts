@@ -70,8 +70,9 @@ export class FrameHistory {
   }
 
   /** Frames in chronological order. */
+  /** Frames in chronological order (always a fresh array, safe to memoise on). */
   ordered(): ReconstructionFrame[] {
-    return this.ring.length < this.capacity ? this.ring : [...this.ring.slice(this.start), ...this.ring.slice(0, this.start)];
+    return this.ring.length < this.capacity ? this.ring.slice() : [...this.ring.slice(this.start), ...this.ring.slice(0, this.start)];
   }
 
   latest(): ReconstructionFrame | null {

@@ -12,7 +12,7 @@ export const axisStyle = {
   axisLine: { lineStyle: { color: "#273244" } },
   axisTick: { lineStyle: { color: "#273244" } },
   splitLine: { lineStyle: { color: "#1a2332" } },
-  axisLabel: { color: "#8b9ab0", fontFamily: "JetBrains Mono Variable, monospace", fontSize: 10 },
+  axisLabel: { color: "#8b9ab0", fontFamily: "JetBrains Mono Variable, monospace", fontSize: 10, hideOverlap: true, formatter: (v: number | string) => (typeof v === "number" ? String(Number(v.toPrecision(4))) : v) },
   nameTextStyle: { color: "#8b9ab0", fontSize: 10 },
 };
 

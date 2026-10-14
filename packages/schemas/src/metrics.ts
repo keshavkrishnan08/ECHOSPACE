@@ -99,6 +99,21 @@ export const METRICS: Record<string, MetricDefinition> = {
     definition: "Cumulative number of times the track matched to a ground-truth subject changed identity.",
     source: "engine metrics: synthetic ground truth",
   },
+  jitterM: {
+    id: "jitterM", label: "Track jitter", unit: "m", kind: "simulation", better: "lower",
+    definition: "RMS of the second difference of matched track positions (x, y) over the window, i.e. frame-to-frame roughness of the estimate. Computed only for tracks matched to ground truth.",
+    source: "apps/web arena analysis over buffered frames",
+  },
+  lagS: {
+    id: "lagS", label: "Temporal lag", unit: "s", kind: "simulation", better: "lower",
+    definition: "Mean along-track error (track − truth projected on the true velocity direction, negated) divided by true speed, over frames where the subject moves faster than 0.3 m/s. Positive = estimate trails the subject.",
+    source: "apps/web arena analysis over buffered frames",
+  },
+  coverage: {
+    id: "coverage", label: "Link coverage", unit: "ratio", kind: "reconstruction", better: "higher",
+    definition: "Fraction of floor cells (max over height) whose posterior variance ratio is below 0.8 — a geometry-only observability measure of the sensor layout.",
+    source: "rti-bayes posterior variance",
+  },
   gpuUtilization: {
     id: "gpuUtilization", label: "GPU utilization", unit: "%", kind: "system", better: "none",
     definition: "Browsers do not expose GPU utilization. Reported only by the Python service when NVML is available.",
