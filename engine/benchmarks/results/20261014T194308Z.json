@@ -1,0 +1,265 @@
+{
+  "label": "Measured on this machine (vm) in a single run on 2026-10-14; not a controlled benchmarking environment.",
+  "generated_by": "engine/benchmarks/run_benchmarks.py",
+  "timestamp_utc": "2026-10-14T19:43:08Z",
+  "method": {
+    "native_clock": "std::chrono::steady_clock",
+    "numpy_clock": "time.perf_counter_ns",
+    "percentiles": "nearest-rank; p95/p99 null when n < 100",
+    "notes": "Same warm-up and iteration counts on both sides; one call per sample. Native kernels are single-threaded; NumPy thread pools limited as recorded in machine.numpy_threads."
+  },
+  "machine": {
+    "cpu_model": "Intel(R) Xeon(R) Processor @ 2.80GHz",
+    "logical_cores": 4,
+    "os": "Linux 6.18.44-fc-v114 x86_64",
+    "compiler": "gcc 13.3.0",
+    "build_type": "Release",
+    "cxx_flags": "-O3 -DNDEBUG",
+    "git_commit": null,
+    "label": "Measured on this machine (vm) in a single run on 2026-10-14; not a controlled benchmarking environment.",
+    "timestamp_utc": "2026-10-14T19:43:23Z",
+    "kernel_threads": 1,
+    "python": "3.13.16",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "numpy_threads": 1,
+    "hostname": "vm"
+  },
+  "native": [
+    {
+      "name": "fft_64_batch",
+      "params": "rows=1024 n=64 forward in-place",
+      "warmup": 30,
+      "iterations": 300,
+      "min_ns": 603113,
+      "median_ns": 946345.5,
+      "mean_ns": 1057712.05,
+      "p95_ns": 1681762,
+      "p99_ns": 2010114,
+      "tail_note": null,
+      "item_unit": "points",
+      "items_per_call": 65536,
+      "items_per_second_at_median": 69251663.37
+    },
+    {
+      "name": "fft_1024_batch",
+      "params": "rows=64 n=1024 forward in-place",
+      "warmup": 30,
+      "iterations": 300,
+      "min_ns": 945163,
+      "median_ns": 1289403,
+      "mean_ns": 1511829.35,
+      "p95_ns": 2173576,
+      "p99_ns": 2256748,
+      "tail_note": null,
+      "item_unit": "points",
+      "items_per_call": 65536,
+      "items_per_second_at_median": 50826622.86
+    },
+    {
+      "name": "doppler_spectrum",
+      "params": "rows=84 n=128 nfft=256",
+      "warmup": 30,
+      "iterations": 300,
+      "min_ns": 671604,
+      "median_ns": 723462.5,
+      "mean_ns": 792024.0033,
+      "p95_ns": 1106050,
+      "p99_ns": 1487795,
+      "tail_note": null,
+      "item_unit": "series",
+      "items_per_call": 84,
+      "items_per_second_at_median": 116108.2986
+    },
+    {
+      "name": "sanitize",
+      "params": "packets=28 M=3 K=30",
+      "warmup": 100,
+      "iterations": 1000,
+      "min_ns": 164882,
+      "median_ns": 167239,
+      "mean_ns": 180110.491,
+      "p95_ns": 225187,
+      "p99_ns": 277105,
+      "tail_note": null,
+      "item_unit": "packets",
+      "items_per_call": 28,
+      "items_per_second_at_median": 167425.0623
+    },
+    {
+      "name": "rti_apply",
+      "params": "V=5280 L=28 frames=1",
+      "warmup": 100,
+      "iterations": 1000,
+      "min_ns": 163749,
+      "median_ns": 174490.5,
+      "mean_ns": 205765.169,
+      "p95_ns": 330437,
+      "p99_ns": 417297,
+      "tail_note": null,
+      "item_unit": "frames",
+      "items_per_call": 1,
+      "items_per_second_at_median": 5730.971027
+    },
+    {
+      "name": "rti_apply_batch",
+      "params": "V=5280 L=28 frames=100",
+      "warmup": 20,
+      "iterations": 200,
+      "min_ns": 20044499,
+      "median_ns": 22765529.5,
+      "mean_ns": 25502804.91,
+      "p95_ns": 36273938,
+      "p99_ns": 38215627,
+      "tail_note": null,
+      "item_unit": "frames",
+      "items_per_call": 100,
+      "items_per_second_at_median": 4392.605935
+    },
+    {
+      "name": "backprojection",
+      "params": "V=5280 L=28 M=3 K=30",
+      "warmup": 5,
+      "iterations": 100,
+      "min_ns": 63701589,
+      "median_ns": 70457194,
+      "mean_ns": 74866316.76,
+      "p95_ns": 97185206,
+      "p99_ns": 111571704,
+      "tail_note": null,
+      "item_unit": "voxels",
+      "items_per_call": 5280,
+      "items_per_second_at_median": 74939.11835
+    }
+  ],
+  "numpy": [
+    {
+      "iterations": 300,
+      "min_ns": 276892.0,
+      "median_ns": 581490.0,
+      "mean_ns": 563741.2066666667,
+      "p95_ns": 677162.0,
+      "p99_ns": 796122.0,
+      "tail_note": null,
+      "name": "fft_64_batch",
+      "params": "rows=1024 n=64 forward in-place",
+      "warmup": 30
+    },
+    {
+      "iterations": 300,
+      "min_ns": 429258.0,
+      "median_ns": 792749.5,
+      "mean_ns": 799487.37,
+      "p95_ns": 992947.0,
+      "p99_ns": 1198300.0,
+      "tail_note": null,
+      "name": "fft_1024_batch",
+      "params": "rows=64 n=1024 forward in-place",
+      "warmup": 30
+    },
+    {
+      "iterations": 300,
+      "min_ns": 460762.0,
+      "median_ns": 844728.5,
+      "mean_ns": 781217.4266666666,
+      "p95_ns": 981964.0,
+      "p99_ns": 1360547.0,
+      "tail_note": null,
+      "name": "doppler_spectrum",
+      "params": "rows=84 n=128 nfft=256",
+      "warmup": 30
+    },
+    {
+      "iterations": 1000,
+      "min_ns": 224964.0,
+      "median_ns": 264708.0,
+      "mean_ns": 302332.734,
+      "p95_ns": 427845.0,
+      "p99_ns": 874132.0,
+      "tail_note": null,
+      "name": "sanitize",
+      "params": "packets=28 M=3 K=30",
+      "warmup": 100
+    },
+    {
+      "iterations": 1000,
+      "min_ns": 199800.0,
+      "median_ns": 237573.0,
+      "mean_ns": 277914.701,
+      "p95_ns": 472298.0,
+      "p99_ns": 597612.0,
+      "tail_note": null,
+      "name": "rti_apply",
+      "params": "V=5280 L=28 frames=1",
+      "warmup": 100
+    },
+    {
+      "iterations": 200,
+      "min_ns": 21735298.0,
+      "median_ns": 23071012.0,
+      "mean_ns": 24337612.62,
+      "p95_ns": 31875167.0,
+      "p99_ns": 32264501.0,
+      "tail_note": null,
+      "name": "rti_apply_batch",
+      "params": "V=5280 L=28 frames=100",
+      "warmup": 20
+    },
+    {
+      "iterations": 100,
+      "min_ns": 624331911.0,
+      "median_ns": 716893830.5,
+      "mean_ns": 746805665.86,
+      "p95_ns": 920937293.0,
+      "p99_ns": 1205319943.0,
+      "tail_note": null,
+      "name": "backprojection",
+      "params": "V=5280 L=28 M=3 K=30",
+      "warmup": 5
+    }
+  ],
+  "comparison": [
+    {
+      "name": "fft_64_batch",
+      "native_median_ns": 946345.5,
+      "numpy_median_ns": 581490.0,
+      "speedup_median": 0.6144584615238303
+    },
+    {
+      "name": "fft_1024_batch",
+      "native_median_ns": 1289403,
+      "numpy_median_ns": 792749.5,
+      "speedup_median": 0.614819028651244
+    },
+    {
+      "name": "doppler_spectrum",
+      "native_median_ns": 723462.5,
+      "numpy_median_ns": 844728.5,
+      "speedup_median": 1.1676189159769856
+    },
+    {
+      "name": "sanitize",
+      "native_median_ns": 167239,
+      "numpy_median_ns": 264708.0,
+      "speedup_median": 1.5828126214579135
+    },
+    {
+      "name": "rti_apply",
+      "native_median_ns": 174490.5,
+      "numpy_median_ns": 237573.0,
+      "speedup_median": 1.36152397981552
+    },
+    {
+      "name": "rti_apply_batch",
+      "native_median_ns": 22765529.5,
+      "numpy_median_ns": 23071012.0,
+      "speedup_median": 1.0134186424260416
+    },
+    {
+      "name": "backprojection",
+      "native_median_ns": 70457194,
+      "numpy_median_ns": 716893830.5,
+      "speedup_median": 10.174884774718675
+    }
+  ]
+}

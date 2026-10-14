@@ -1,0 +1,97 @@
+// Typed internal data-plane contract for the ECHOSPACE native engine.
+//
+// Status: planned interface, not served by any process yet. The running product uses the
+// JSON-over-WebSocket envelope defined in packages/schemas/src/stream.ts. Field meanings
+// follow that schema and packages/schemas/src/frame.ts where they overlap.
+//
+// Array encoding: dense numeric arrays are carried as `bytes` holding little-endian IEEE-754
+// values. The dtype is stated next to each field and the element count is implied by the
+// accompanying dimensions. This mirrors the base64 Float32 convention of the WebSocket
+// protocol without the base64 overhead.
+syntax = "proto3";
+
+package echospace.dataplane.v1;
+
+option cc_enable_arenas = true;
+
+// One CSI measurement for one link (tx -> rx), shape [antennas x subcarriers], antenna-major.
+message CsiPacket {
+  uint32 link = 1;                 // link index into the session's link table
+  uint64 seq = 2;                  // per-link sequence number, used for loss accounting
+  optional uint64 timestamp_ns = 3;  // capture time (sensor clock); absent if unknown
+  uint32 antennas = 4;             // M
+  uint32 subcarriers = 5;          // K
+  repeated float re = 6 [packed = true];  // M*K real parts
+  repeated float im = 7 [packed = true];  // M*K imaginary parts
+  string source_id = 8;            // device or recording identifier (provenance)
+}
+
+// Per-frame link features after sanitization and filtering (LinkFeatures in frame.ts).
+message FeatureFrame {
+  uint64 seq = 1;
+  double timestamp_s = 2;
+  uint32 links = 3;                // L; every array below has L float32 values
+  bytes rss_db = 4;                // float32[L]
+  bytes delta_rss_db = 5;          // float32[L], NaN = link inactive this frame
+  bytes motion_energy = 6;         // float32[L]
+  bytes snr_est_db = 7;            // float32[L]
+  bytes delivery_ratio = 8;        // float32[L]
+}
+
+message GridSpec {
+  uint32 nx = 1;
+  uint32 ny = 2;
+  uint32 nz = 3;
+  float voxel_size_m = 4;
+  float origin_x = 5;
+  float origin_y = 6;
+  float origin_z = 7;
+}
+
+message Vec3 {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+}
+
+message Track {
+  string id = 1;
+  Vec3 position = 2;
+  Vec3 velocity = 3;
+  float cov_xx = 4;                // floor-plane position covariance, m^2
+  float cov_xy = 5;
+  float cov_yy = 6;
+  bool confirmed = 7;
+  float confidence = 8;
+}
+
+// Processing time of one pipeline stage for one frame.
+message StageTiming {
+  string stage = 1;                // stage id, as StageId in scenario.ts
+  double duration_ms = 2;
+  double queue_delay_ms = 3;       // wait of the oldest input in the preceding queue
+  uint64 items_in = 4;
+  uint64 items_out = 5;
+  uint64 drops = 6;                // cumulative ring-buffer drops before this stage
+}
+
+message ReconstructionFrame {
+  uint64 seq = 1;
+  double timestamp_s = 2;
+  GridSpec grid = 3;
+  // Voxel order: x fastest, then y, then z (index = i + nx * (j + ny * k)).
+  bytes occupancy = 4;             // float32[nx*ny*nz], detection confidence in [0, 1]
+  bytes variance_ratio = 5;        // float32[nx*ny*nz], posterior/prior variance in [0, 1]
+  repeated Track tracks = 6;
+  repeated StageTiming timings = 7;
+  string model_id = 8;
+  string config_hash = 9;
+  uint32 active_links = 10;
+}
+
+service DspService {
+  // The client streams CSI packets and the server streams reconstruction frames as they are
+  // produced. The two streams are not 1:1: a frame aggregates many packets, and packets may
+  // be dropped under backpressure (reported in StageTiming.drops).
+  rpc Process(stream CsiPacket) returns (stream ReconstructionFrame);
+}
