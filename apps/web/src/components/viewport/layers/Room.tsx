@@ -41,6 +41,7 @@ export function Room({ config, layers, interactive }: { config: ScenarioConfig; 
     }
   };
 
+  if (!layers.room) return null;
   return (
     <group>
       {layers.floorCeiling && (
