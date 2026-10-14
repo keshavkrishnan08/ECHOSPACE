@@ -1,4 +1,4 @@
-import { Activity, Boxes, Cpu, Database, FlaskConical, Gauge, LayoutDashboard, Radio, Settings, Orbit, BookOpen, Microscope } from "lucide-react";
+import { Activity, Boxes, Cpu, Database, FlaskConical, Gauge, LayoutDashboard, Radio, Settings, Orbit, BookOpen, Microscope, Clapperboard } from "lucide-react";
 
 export const NAV = [
   { href: "/", label: "Overview", icon: LayoutDashboard, primary: false, key: "1" },
@@ -16,4 +16,5 @@ export const NAV = [
 export const SECONDARY = [
   { href: "/hardware", label: "Hardware readiness", icon: Cpu },
   { href: "/docs", label: "Documentation", icon: BookOpen },
+  { href: "/showcase", label: "Showcase", icon: Clapperboard },
 ] as const;
