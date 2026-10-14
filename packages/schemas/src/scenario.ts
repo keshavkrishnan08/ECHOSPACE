@@ -87,16 +87,22 @@ export type ReconModelId = z.infer<typeof ReconModelId>;
 export const ReconConfig = z.object({
   modelId: ReconModelId.default("rti-bayes"),
   voxelSizeM: z.number().min(0.15).max(0.6).default(0.25),
-  /** Attenuation-density threshold tau (dB/m^3 in the RTI image model) for occupancy probability. */
-  densityThreshold: z.number().min(0.01).max(10).default(0.6),
+  /**
+   * Detection threshold z0 on the null-hypothesis z-score of the posterior-mean attenuation
+   * density. Occupancy probability is reported as Phi(z - z0) (a detection confidence, not a
+   * calibrated posterior probability).
+   */
+  detectionZ: z.number().min(0).max(10).default(4),
   occupancyThreshold: z.number().min(0.05).max(0.99).default(0.6),
-  confidenceThreshold: z.number().min(0).max(1).default(0.3),
+  confidenceThreshold: z.number().min(0).max(1).default(0.1),
   temporalSmoothing: z.number().min(0).max(0.98).default(0.5),
   spatialFilter: z.boolean().default(true),
   ellipseExcessM: z.number().min(0.02).max(1).default(0.12),
   priorStd: z.number().min(0.05).max(10).default(1.0),
   priorCorrelationM: z.number().min(0.05).max(3).default(0.35),
   noiseStdDb: z.number().min(0.05).max(10).default(1.0),
+  /** Correlation kernel truncation radius in multiples of priorCorrelationM. */
+  kernelCutoff: z.number().min(1).max(8).default(4),
   maxPoints: z.number().int().min(100).max(50000).default(6000),
   outlierRemoval: z.boolean().default(true),
 });

@@ -135,6 +135,8 @@ export interface ReconstructionFrame {
   seq: number;
   /** Simulation or acquisition time of the newest packet in this frame, seconds. */
   timestampS: number;
+  /** Wall-clock time the newest packet of this frame entered the acquisition queue, epoch ms. */
+  ingestedAtMs: number;
   /** Wall-clock time the frame was emitted, epoch ms. */
   emittedAtMs: number;
   state: ProcessingState;
@@ -159,6 +161,8 @@ export interface ReconstructionFrame {
   dopplerColumn: Float32Array | null;
   dopplerFreqsHz: Float32Array | null;
   stages: StageRecord[];
+  /** Modelled propagation paths of the selected link (synthetic sources only). */
+  propagation: Array<{ linkIndex: number; kind: "los" | "reflection" | "scatter"; points: Vec3[]; amplitude: number; lengthM: number; surface: string | null }> | null;
   metrics: FrameMetrics;
   events: TrackEvent[];
   capability: {
@@ -168,4 +172,6 @@ export interface ReconstructionFrame {
     modelMessage: string;
   };
   warnings: string[];
+  /** Counters for the bounded queues feeding this frame. */
+  queues: { acquisitionDepth: number; acquisitionCapacity: number; acquisitionDrops: number; framesDropped: number };
 }
