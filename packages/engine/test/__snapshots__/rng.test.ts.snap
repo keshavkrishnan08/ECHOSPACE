@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Rng > matches the frozen reference stream shared with the Python engine 1`] = `
+[
+  518667457,
+  440444462,
+  4232892992,
+  3757857622,
+  3939018813,
+]
+`;
