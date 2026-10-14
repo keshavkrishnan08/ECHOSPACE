@@ -115,6 +115,7 @@ def experiment_record() -> dict[str, Any]:
         "frames": 5,
         "replayDigest": "9f" * 32,
         "replayDigestFrames": 40,
+        "liveRunReproducible": True,
         "summaries": summaries,
         "series": series,
         "events": [{"t": 0.3, "kind": "track-confirmed", "message": "Track T1 confirmed"}],
