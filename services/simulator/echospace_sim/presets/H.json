@@ -1,0 +1,337 @@
+{
+  "key": "H",
+  "title": "Temporal filtering comparison",
+  "objective": "Trade smoothness against responsiveness: compare no filter, exponential smoothing and a constant-velocity Kalman filter.",
+  "lesson": "Smoothing lowers jitter but adds lag at turns and stops. The best setting depends on the motion; there is no free lunch.",
+  "difficulty": "moderate",
+  "config": {
+    "schemaVersion": 1,
+    "scenario": "H",
+    "name": "Temporal filtering comparison",
+    "seed": 71,
+    "durationS": 60,
+    "room": {
+      "width": 6,
+      "depth": 5,
+      "height": 2.8,
+      "wallMaterial": "drywall",
+      "wallThickness": 0.12,
+      "wallReflectivity": null
+    },
+    "obstacles": [
+      {
+        "id": "table",
+        "kind": "table",
+        "min": [
+          2.4,
+          2,
+          0.7
+        ],
+        "max": [
+          3.6,
+          2.8,
+          0.76
+        ],
+        "material": "wood",
+        "attenuationDb": null
+      },
+      {
+        "id": "sofa",
+        "kind": "sofa",
+        "min": [
+          0.6,
+          3.9,
+          0
+        ],
+        "max": [
+          2.6,
+          4.7,
+          0.85
+        ],
+        "material": "fabric",
+        "attenuationDb": null
+      },
+      {
+        "id": "cabinet",
+        "kind": "cabinet",
+        "min": [
+          5.3,
+          3.6,
+          0
+        ],
+        "max": [
+          5.8,
+          4.6,
+          1.9
+        ],
+        "material": "metal",
+        "attenuationDb": null
+      }
+    ],
+    "openings": [
+      {
+        "id": "door",
+        "kind": "door",
+        "wall": "south",
+        "offset": 1,
+        "width": 0.9,
+        "height": 2.05,
+        "sill": 0
+      },
+      {
+        "id": "window",
+        "kind": "window",
+        "wall": "north",
+        "offset": 3.8,
+        "width": 1.6,
+        "height": 1.2,
+        "sill": 0.9
+      }
+    ],
+    "sensors": [
+      {
+        "id": "N1",
+        "label": "Node 1",
+        "role": "trx",
+        "position": [
+          1.375,
+          0.15,
+          1
+        ],
+        "yawDeg": 55,
+        "antennas": 3,
+        "enabled": true
+      },
+      {
+        "id": "N2",
+        "label": "Node 2",
+        "role": "trx",
+        "position": [
+          4.125,
+          0.15,
+          1.6
+        ],
+        "yawDeg": 116,
+        "antennas": 3,
+        "enabled": true
+      },
+      {
+        "id": "N3",
+        "label": "Node 3",
+        "role": "trx",
+        "position": [
+          5.85,
+          0.875,
+          1
+        ],
+        "yawDeg": 150,
+        "antennas": 3,
+        "enabled": true
+      },
+      {
+        "id": "N4",
+        "label": "Node 4",
+        "role": "trx",
+        "position": [
+          5.85,
+          3.625,
+          1.6
+        ],
+        "yawDeg": -158,
+        "antennas": 3,
+        "enabled": true
+      },
+      {
+        "id": "N5",
+        "label": "Node 5",
+        "role": "trx",
+        "position": [
+          4.625,
+          4.85,
+          1
+        ],
+        "yawDeg": -125,
+        "antennas": 3,
+        "enabled": true
+      },
+      {
+        "id": "N6",
+        "label": "Node 6",
+        "role": "trx",
+        "position": [
+          1.875,
+          4.85,
+          1.6
+        ],
+        "yawDeg": -64,
+        "antennas": 3,
+        "enabled": true
+      },
+      {
+        "id": "N7",
+        "label": "Node 7",
+        "role": "trx",
+        "position": [
+          0.15,
+          4.125,
+          1
+        ],
+        "yawDeg": -30,
+        "antennas": 3,
+        "enabled": true
+      },
+      {
+        "id": "N8",
+        "label": "Node 8",
+        "role": "trx",
+        "position": [
+          0.15,
+          1.375,
+          1.6
+        ],
+        "yawDeg": 22,
+        "antennas": 3,
+        "enabled": true
+      }
+    ],
+    "subjects": [
+      {
+        "id": "s1",
+        "label": "S1",
+        "heightM": 1.75,
+        "radiusM": 0.22,
+        "rcsM2": 1,
+        "start": [
+          1.2,
+          1.2
+        ],
+        "startHeadingDeg": 0,
+        "startDelayS": 0,
+        "actions": [
+          {
+            "type": "walk",
+            "to": [
+              4.8,
+              1.2
+            ],
+            "speed": 1.3
+          },
+          {
+            "type": "stop",
+            "durationS": 2
+          },
+          {
+            "type": "turn",
+            "headingDeg": 90,
+            "durationS": 1
+          },
+          {
+            "type": "walk",
+            "to": [
+              4.6,
+              3.2
+            ],
+            "speed": 1.3
+          },
+          {
+            "type": "sit",
+            "durationS": 6
+          },
+          {
+            "type": "walk",
+            "to": [
+              4.8,
+              1.2
+            ],
+            "speed": 1.3
+          },
+          {
+            "type": "turn",
+            "headingDeg": 180,
+            "durationS": 1
+          }
+        ],
+        "loop": true
+      }
+    ],
+    "signal": {
+      "centerFreqHz": 5320000000,
+      "bandwidthHz": 40000000,
+      "subcarriers": 30,
+      "packetRateHz": 100,
+      "snrDb": 25,
+      "maxReflectionOrder": 1,
+      "reflectingSurfaces": 6,
+      "subjectScatter": true,
+      "subjectShadowing": true,
+      "bodyShadowDb": 8
+    },
+    "impairments": {
+      "packetLoss": 0.01,
+      "burstRateHz": 0,
+      "burstLengthPackets": 20,
+      "timestampJitterMs": 0.5,
+      "missingTimestampProb": 0,
+      "phaseInstabilityRad": 0.02,
+      "cfo": true,
+      "sto": true,
+      "agcSigmaDb": 0.2,
+      "missingAntennas": []
+    },
+    "dsp": {
+      "frameRateHz": 10,
+      "bufferSeconds": 2.56,
+      "calibrationSeconds": 3,
+      "phaseSanitize": true,
+      "hampel": {
+        "enabled": true,
+        "halfWindow": 3,
+        "nSigma": 3
+      },
+      "lowpass": {
+        "enabled": true,
+        "alpha": 0.5
+      }
+    },
+    "recon": {
+      "modelId": "rti-bayes",
+      "voxelSizeM": 0.25,
+      "detectionZ": 4,
+      "occupancyThreshold": 0.6,
+      "confidenceThreshold": 0.1,
+      "temporalSmoothing": 0.5,
+      "spatialFilter": true,
+      "ellipseExcessM": 0.12,
+      "priorStd": 1,
+      "priorCorrelationM": 0.35,
+      "noiseStdDb": 1,
+      "kernelCutoff": 4,
+      "maxPoints": 6000,
+      "outlierRemoval": true
+    },
+    "tracking": {
+      "enabled": true,
+      "filter": "kalman",
+      "emaAlpha": 0.35,
+      "processNoise": 1.5,
+      "measurementStdM": 0.35,
+      "gateM": 1.2,
+      "birthHits": 3,
+      "maxMisses": 8,
+      "detectionThreshold": 0.55,
+      "maxDetections": 4
+    },
+    "privacy": {
+      "mode": "standard",
+      "showSkeleton": true,
+      "trackHistorySeconds": 10
+    },
+    "pipeline": {
+      "queueDepth": 256,
+      "dropPolicy": "drop-oldest",
+      "maxInFlightFrames": 2,
+      "injectedInferenceDelayMs": 0,
+      "bypass": {}
+    }
+  }
+}

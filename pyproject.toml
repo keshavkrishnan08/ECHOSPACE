@@ -1,0 +1,70 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "echospace"
+version = "0.1.0"
+description = "ECHOSPACE Python reference implementation: synthetic CSI simulator and inference pipeline"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "pydantic>=2",
+]
+
+[project.optional-dependencies]
+api = [
+    "fastapi",
+    "uvicorn[standard]",
+    "sqlalchemy",
+    "alembic",
+    "boto3",
+    "httpx",
+    "websockets",
+]
+dev = [
+    "pytest",
+    "ruff",
+    "mypy",
+]
+
+[tool.setuptools]
+package-dir = { "echospace_sim" = "services/simulator/echospace_sim", "echospace_inference" = "services/inference/echospace_inference", "echospace_api" = "services/api/echospace_api" }
+packages = [
+    "echospace_sim",
+    "echospace_inference",
+    "echospace_api",
+]
+
+[tool.setuptools.package-data]
+"echospace_sim" = ["presets/*.json", "py.typed"]
+"echospace_inference" = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["services/simulator/tests", "services/inference/tests"]
+addopts = "-ra --import-mode=importlib"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["node_modules", "packages", "apps"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "N", "SIM", "RUF", "NPY"]
+ignore = [
+    "N803",  # argument names such as M, K, L mirror the TypeScript engine and the literature
+    "N806",  # same for local variables
+    "RUF001",  # strings and docstrings use mathematical symbols (σ, Φ, ×)
+    "RUF002",
+    "RUF003",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["echospace_sim", "echospace_inference", "echospace_api"]
+
+[tool.mypy]
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+ignore_missing_imports = true
