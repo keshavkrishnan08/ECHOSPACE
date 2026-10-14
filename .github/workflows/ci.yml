@@ -1,0 +1,59 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  typescript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r typecheck
+      - run: pnpm --filter @echospace/engine test
+      - run: pnpm --filter @echospace/web build
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -e ".[api,dev]"
+      - run: ruff check services models
+      - run: mypy services/simulator/echospace_sim services/inference/echospace_inference
+      - run: pytest -q
+
+  native:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install numpy scipy pytest
+      - run: cmake -S engine -B engine/build -DCMAKE_BUILD_TYPE=Release -DECHOSPACE_WERROR=ON
+      - run: cmake --build engine/build -j
+      - run: ctest --test-dir engine/build --output-on-failure
+      - run: pytest -q engine/tests
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: typescript
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @echospace/web exec playwright install --with-deps chromium
+      - run: pnpm --filter @echospace/web build
+      - run: pnpm --filter @echospace/web e2e
+        env: { E2E_PROD: "1", CI: "1" }
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: { name: playwright-report, path: apps/web/playwright-report }

@@ -22,3 +22,4 @@ engine/build/
 apps/web/public/models/
 apps/web/public/datasets/
 apps/web/public/docs/
+apps/web/public/showcase/.raw/
