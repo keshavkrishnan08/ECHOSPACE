@@ -1,0 +1,13 @@
+# Used by BuildKit for services/api/Dockerfile (build context = repository root).
+**/node_modules
+**/__pycache__
+**/*.pyc
+.venv
+.git
+var
+apps
+packages
+engine/build
+**/.pytest_cache
+**/.ruff_cache
+**/.mypy_cache

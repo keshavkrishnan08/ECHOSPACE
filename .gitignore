@@ -19,3 +19,6 @@ playwright-report/
 test-results/
 engine/build/
 .DS_Store
+apps/web/public/models/
+apps/web/public/datasets/
+apps/web/public/docs/

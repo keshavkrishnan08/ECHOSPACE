@@ -159,6 +159,7 @@ export function ExperimentsPage() {
                     ["Config hash", cur.configHash],
                     ["Mid-run changes", cur.configChanges.length],
                     ["Replay digest", cur.replayDigest ? `${cur.replayDigest.slice(0, 16)}… (${cur.replayDigestFrames} frames)` : "not available"],
+                    ["Live run reproducible", cur.liveRunReproducible === null ? "unknown" : cur.liveRunReproducible ? "yes" : "no (backpressure dropped data under load)"],
                     ["Duration", duration(cur.simulatedDurationS)],
                     ["Machine", `${cur.machine?.hardwareConcurrency ?? "?"} threads · ${cur.machine?.gpu ?? "GPU unknown"}`],
                   ] as Array<[string, React.ReactNode]>).map(([k, v]) => (

@@ -58,7 +58,8 @@ export function SaveExperimentDialog() {
           <dt className="text-muted">Frames recorded</dt><dd className="num">{frames}</dd>
           <dt className="text-muted">Mid-run changes</dt><dd className="num">{s.configChanges.length}</dd>
         </dl>
-        {frames < 40 && <p className="text-warn">Fewer than 40 frames: the replay digest cannot be computed, so reproduction will not be verifiable.</p>}
+        <p className="text-2xs text-faint">A deterministic digest of the first 40 frames is computed from the launch configuration and recorded changes (unpaced, no backpressure) so replays can be verified independently of machine load.</p>
+        {s.replayDigestClean === false && <p className="text-warn">Real-time backpressure dropped packets or skipped frames early in this live run, so the live frames will not match a replay exactly. The stored digest still verifies the configuration.</p>}
         <div className="flex justify-end gap-2">
           <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
           <Button variant="primary" onClick={save} disabled={busy || frames === 0} data-testid="confirm-save">{busy ? "Saving…" : "Save experiment"}</Button>

@@ -1,6 +1,6 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Download, GraduationCap, Play, RotateCcw, Save, SplitSquareHorizontal, Undo2 } from "lucide-react";
 import type { EChartsOption } from "echarts";
 import type { ScenarioConfig, ScenarioKey } from "@echospace/schemas";
@@ -58,9 +58,11 @@ export function ArenaPage() {
   }, [def.key]);
   useEffect(() => setDraft(s.config), [s.config]);
 
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const apply = (c: ScenarioConfig) => {
     setDraft(c);
-    s.applyConfig(c);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => useSession.getState().applyConfig(c), 200);
   };
   const frames = useMemo(() => history.ordered(), [v]); // eslint-disable-line react-hooks/exhaustive-deps
   const fq = useMemo(() => filterQuality(frames.slice(-300)), [v]); // eslint-disable-line react-hooks/exhaustive-deps

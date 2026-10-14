@@ -2,6 +2,7 @@
 import { EchoEngine, PushSource, RecordedSource, type PacketSource } from "@echospace/engine";
 import type { ReconstructionFrame } from "@echospace/schemas";
 import type { EngineInfo, FromWorker, ToWorker } from "./protocol";
+import { DIGEST_FRAMES, digestParts, framePart } from "./digest";
 
 /**
  * Engine host. Runs simulation, DSP and inference off the UI thread. Frames are posted with
@@ -19,6 +20,31 @@ let maxInFlight = 2;
 let displayDrops = 0;
 let lastTick = 0;
 let timer: ReturnType<typeof setInterval> | null = null;
+/** Incremented by the UI on every launch/restart; frames carry it so stale ones can be dropped. */
+let epoch = 0;
+let digestBuf: number[] = [];
+let digestDone = false;
+
+/** Feeds every produced frame (before any display drop) into the replay digest. */
+function digest(frames: ReconstructionFrame[]) {
+  if (digestDone) return;
+  for (const f of frames) {
+    if (f.seq >= DIGEST_FRAMES) continue;
+    framePart(f, digestBuf);
+    if (f.seq === DIGEST_FRAMES - 1) {
+      digestDone = true;
+      const e = epoch;
+      const clean = !!engine && engine.framesDropped === 0 && engine.queueStats.drops === 0;
+      void digestParts(digestBuf).then((d) => post({ type: "digest", epoch: e, digest: d, frames: DIGEST_FRAMES, clean }));
+      digestBuf = [];
+    }
+  }
+}
+
+function resetDigest() {
+  digestBuf = [];
+  digestDone = false;
+}
 
 const post = (msg: FromWorker, transfer: Transferable[] = []) => self.postMessage(msg, transfer);
 
@@ -48,12 +74,13 @@ function transferables(frames: ReconstructionFrame[]): Transferable[] {
 
 function emit(frames: ReconstructionFrame[]) {
   if (!frames.length || !engine) return;
+  digest(frames);
   if (inFlight >= maxInFlight) {
     displayDrops += frames.length;
     return;
   }
   inFlight++;
-  post({ type: "frames", frames, simTime: engine.simTime, displayDrops }, transferables(frames));
+  post({ type: "frames", frames, simTime: engine.simTime, displayDrops, epoch }, transferables(frames));
 }
 
 function tick() {
@@ -82,6 +109,7 @@ function startTimer() {
 function boot(make: () => EchoEngine, max: number) {
   const t0 = performance.now();
   engine = make();
+  resetDigest();
   maxInFlight = max;
   inFlight = 0;
   displayDrops = 0;
@@ -140,9 +168,14 @@ self.onmessage = (ev: MessageEvent<ToWorker>) => {
           post({ type: "status", playing: false, simTime: engine.simTime, finished: engine.finished });
         }
         break;
+      case "epoch":
+        epoch = msg.epoch;
+        break;
       case "restart":
+        epoch = msg.epoch;
         if (engine) {
           engine.restart();
+          resetDigest();
           inFlight = 0;
           post({ type: "ready", info: info(engine, 0) });
           post({ type: "status", playing, simTime: 0, finished: false });

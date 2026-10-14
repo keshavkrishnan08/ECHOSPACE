@@ -51,3 +51,16 @@ def test_derive_seed_separates_streams() -> None:
     assert derive_seed(1, 1, 0) != derive_seed(1, 1, 1)
     assert derive_seed(1, 1, 0) == derive_seed(1, 1, 0)
     assert derive_seed(7, STREAM.impairments, 3) != derive_seed(7, STREAM.calibration, 3)
+
+
+def test_bank_lanes_equal_scalar_streams() -> None:
+    from echospace_sim.rng import RngBank
+
+    seeds = [1, 7, 99, 12345]
+    bank = RngBank(seeds, block=37)  # small block: forces refills mid-request
+    for seed, lane in zip(seeds, bank.lanes, strict=True):
+        ref = Rng(seed)
+        assert [lane.next_u32() for _ in range(5)] == [ref.next_u32() for _ in range(5)]
+        assert lane.normals(60) == ref.normals(60)
+        assert lane.uniform() == ref.uniform()
+        assert lane.normal() == ref.normal()

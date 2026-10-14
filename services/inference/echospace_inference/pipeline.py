@@ -11,6 +11,7 @@ engine. Other reconstruction models are reported as unsupported.
 from __future__ import annotations
 
 import math
+import time
 from collections import deque
 from dataclasses import dataclass, field
 from itertools import pairwise
@@ -386,6 +387,8 @@ class ReferenceEngine:
         self.source = SyntheticSource(config)
         self.pipeline = Pipeline(config, self.source)
         self._next_frame_t = 1 / config.dsp.frame_rate_hz
+        self.last_process_ms = 0.0
+        """Wall time of the most recent ``Pipeline.process`` call (excludes packet synthesis), ms."""
         cal = self.source.calibration()
         if cal:
             self.pipeline.calibrate(cal)
@@ -393,7 +396,9 @@ class ReferenceEngine:
     def step(self) -> tuple[Frame, list[GroundTruthSubject]]:
         t = self._next_frame_t
         packets = self.source.pull(t)
+        started = time.perf_counter()
         frame = self.pipeline.process(packets, t)
+        self.last_process_ms = (time.perf_counter() - started) * 1000
         self._next_frame_t += 1 / self.config.dsp.frame_rate_hz
         return frame, self.source.ground_truth(t)
 

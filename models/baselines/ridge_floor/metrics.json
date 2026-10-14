@@ -1,0 +1,510 @@
+{
+  "model": {
+    "id": "ridge-floor",
+    "version": "1.0.0",
+    "preprocessingVersion": "pp-1.0.0"
+  },
+  "dataset": {
+    "id": "synthetic-ridge-v1",
+    "checksum": "sha256:5c54ed47f3e0448eb01c9be4cca3e68e19dd3afba4e54bcb209a473fbebfde9c",
+    "scenes": 48,
+    "framesBySplit": {
+      "train": 4960,
+      "val": 1240,
+      "test": 1240
+    }
+  },
+  "splits": {
+    "train": [
+      1001,
+      1003,
+      1004,
+      1005,
+      1006,
+      1008,
+      1009,
+      1010,
+      1011,
+      1012,
+      1013,
+      1014,
+      1015,
+      1016,
+      1022,
+      1023,
+      1025,
+      1026,
+      1029,
+      1032,
+      1033,
+      1034,
+      1036,
+      1037,
+      1038,
+      1039,
+      1040,
+      1043,
+      1045,
+      1046,
+      1047,
+      1048
+    ],
+    "val": [
+      1002,
+      1017,
+      1018,
+      1021,
+      1027,
+      1028,
+      1031,
+      1044
+    ],
+    "test": [
+      1007,
+      1019,
+      1020,
+      1024,
+      1030,
+      1035,
+      1041,
+      1042
+    ]
+  },
+  "splitMethod": "by scene seed, stratified by scene kind, numpy default_rng(20261014)",
+  "features": "deltaRssDb (28 links) + motionEnergy (28 links); NaN replaced by the training mean",
+  "target": "12x10 floor cells of 0.5 m; 1 if the cell centre is within subject radius + 0.25 m of a present subject",
+  "threshold": 0.5,
+  "alphaGrid": [
+    0.01,
+    0.1,
+    1.0,
+    10.0,
+    100.0,
+    1000.0,
+    10000.0,
+    100000.0
+  ],
+  "alpha": 1.0,
+  "alphaSelection": "maximum pooled validation IoU at the best threshold per alpha (ties \u2192 larger alpha)",
+  "validationCurve": [
+    {
+      "alpha": 0.01,
+      "valIouAt0.5": 0.24691358024691357,
+      "valBestThreshold": 0.3,
+      "valIouAtBestThreshold": 0.4005602240896359,
+      "valMse": 0.01630031412683233
+    },
+    {
+      "alpha": 0.1,
+      "valIouAt0.5": 0.24691358024691357,
+      "valBestThreshold": 0.3,
+      "valIouAtBestThreshold": 0.4005602240896359,
+      "valMse": 0.016300245292595616
+    },
+    {
+      "alpha": 1.0,
+      "valIouAt0.5": 0.24654880116250907,
+      "valBestThreshold": 0.3,
+      "valIouAtBestThreshold": 0.40059162385178265,
+      "valMse": 0.016299559814081262
+    },
+    {
+      "alpha": 10.0,
+      "valIouAt0.5": 0.24442289039767218,
+      "valBestThreshold": 0.3,
+      "valIouAtBestThreshold": 0.3989394884591391,
+      "valMse": 0.016292985625198143
+    },
+    {
+      "alpha": 100.0,
+      "valIouAt0.5": 0.23240990438833048,
+      "valBestThreshold": 0.3,
+      "valIouAtBestThreshold": 0.39690145344194216,
+      "valMse": 0.016250384302969403
+    },
+    {
+      "alpha": 1000.0,
+      "valIouAt0.5": 0.12689054088695206,
+      "valBestThreshold": 0.25,
+      "valIouAtBestThreshold": 0.3738473167044596,
+      "valMse": 0.016496030623113788
+    },
+    {
+      "alpha": 10000.0,
+      "valIouAt0.5": 0.002735229759299781,
+      "valBestThreshold": 0.15,
+      "valIouAtBestThreshold": 0.3044836956521739,
+      "valMse": 0.018854380983269973
+    },
+    {
+      "alpha": 100000.0,
+      "valIouAt0.5": 0.0,
+      "valBestThreshold": 0.1,
+      "valIouAtBestThreshold": 0.10985533453887884,
+      "valMse": 0.02229942414833658
+    }
+  ],
+  "operatingPoint": {
+    "rawThreshold": 0.3,
+    "outputGain": 1.6666666666666667,
+    "rule": "validation-optimal threshold tau* on the clipped raw scores; W and b multiplied by 0.5 / tau* so that ridge scores >= 0.5 are exactly raw scores >= tau*"
+  },
+  "rtiThresholdSelection": {
+    "grid": [
+      0.5,
+      0.55,
+      0.6,
+      0.65,
+      0.7,
+      0.75,
+      0.8,
+      0.85,
+      0.9,
+      0.95
+    ],
+    "threshold": 0.8,
+    "valIou": 0.27831852165326565,
+    "rule": "same procedure as the ridge operating point, on the rti-bayes observed-voxel floor projection"
+  },
+  "oodMaxMeanAbsZ": 1.6072,
+  "oodRule": "99.5th percentile of per-frame mean |z| over the validation frames",
+  "train": {
+    "ridge": {
+      "frames": 4960,
+      "iou": 0.5657252767873897,
+      "precision": 0.6491010873075681,
+      "recall": 0.8149624923971075,
+      "medianFrameIou": 0.6,
+      "meanFrameIou": 0.5891908701794217,
+      "emptyFrames": 1055,
+      "emptyFrameFalsePositiveRate": 0.0
+    }
+  },
+  "validation": {
+    "ridge": {
+      "frames": 1240,
+      "iou": 0.40059162385178265,
+      "precision": 0.4803061414971066,
+      "recall": 0.7070623797746634,
+      "medianFrameIou": 0.4,
+      "meanFrameIou": 0.42074805350287897,
+      "emptyFrames": 195,
+      "emptyFrameFalsePositiveRate": 0.0
+    },
+    "rtiObservedT05": {
+      "frames": 1240,
+      "iou": 0.19544820590845696,
+      "precision": 0.20258903929557104,
+      "recall": 0.8472107721901622,
+      "medianFrameIou": 0.2222222222222222,
+      "meanFrameIou": 0.2484340540336017,
+      "emptyFrames": 195,
+      "emptyFrameFalsePositiveRate": 0.0
+    },
+    "rtiObservedT06": {
+      "frames": 1240,
+      "iou": 0.2309285181810652,
+      "precision": 0.2484405631794689,
+      "recall": 0.7661445452047265,
+      "medianFrameIou": 0.25,
+      "meanFrameIou": 0.2750417450278954,
+      "emptyFrames": 195,
+      "emptyFrameFalsePositiveRate": 0.0
+    },
+    "rtiObservedValTuned": {
+      "threshold": 0.8,
+      "frames": 1240,
+      "iou": 0.27831852165326565,
+      "precision": 0.3638207634150839,
+      "recall": 0.5421819181093707,
+      "medianFrameIou": 0.2777777777777778,
+      "meanFrameIou": 0.26808995828116067,
+      "emptyFrames": 195,
+      "emptyFrameFalsePositiveRate": 0.0
+    },
+    "rtiAllVoxelsT05": {
+      "frames": 1240,
+      "iou": 0.024455645161290323,
+      "precision": 0.024455645161290323,
+      "recall": 1.0,
+      "medianFrameIou": 0.025,
+      "meanFrameIou": 0.024455645161290323,
+      "emptyFrames": 195,
+      "emptyFrameFalsePositiveRate": 1.0
+    },
+    "ridgeOodFraction": 0.00564516129032258,
+    "byKind": {
+      "empty": {
+        "ridge": {
+          "frames": 155,
+          "iou": null,
+          "precision": null,
+          "recall": null,
+          "medianFrameIou": null,
+          "meanFrameIou": null,
+          "emptyFrames": 155,
+          "emptyFrameFalsePositiveRate": 0.0
+        },
+        "rtiObservedT05": {
+          "frames": 155,
+          "iou": null,
+          "precision": null,
+          "recall": null,
+          "medianFrameIou": null,
+          "meanFrameIou": null,
+          "emptyFrames": 155,
+          "emptyFrameFalsePositiveRate": 0.0
+        },
+        "rtiObservedValTuned": {
+          "frames": 155,
+          "iou": null,
+          "precision": null,
+          "recall": null,
+          "medianFrameIou": null,
+          "meanFrameIou": null,
+          "emptyFrames": 155,
+          "emptyFrameFalsePositiveRate": 0.0
+        }
+      },
+      "one": {
+        "ridge": {
+          "frames": 620,
+          "iou": 0.4408179315768777,
+          "precision": 0.5182616736014795,
+          "recall": 0.7468354430379747,
+          "medianFrameIou": 0.41428571428571426,
+          "meanFrameIou": 0.44917829775588397,
+          "emptyFrames": 40,
+          "emptyFrameFalsePositiveRate": 0.0
+        },
+        "rtiObservedT05": {
+          "frames": 620,
+          "iou": 0.18534299105240734,
+          "precision": 0.19065010956902848,
+          "recall": 0.8694203864090606,
+          "medianFrameIou": 0.21428571428571427,
+          "meanFrameIou": 0.2573193315252855,
+          "emptyFrames": 40,
+          "emptyFrameFalsePositiveRate": 0.0
+        },
+        "rtiObservedValTuned": {
+          "frames": 620,
+          "iou": 0.27900552486187846,
+          "precision": 0.36677258284157965,
+          "recall": 0.5383077948034644,
+          "medianFrameIou": 0.3,
+          "meanFrameIou": 0.27127101346928933,
+          "emptyFrames": 40,
+          "emptyFrameFalsePositiveRate": 0.0
+        }
+      },
+      "two": {
+        "ridge": {
+          "frames": 465,
+          "iou": 0.37422680412371134,
+          "precision": 0.4546023794614903,
+          "recall": 0.6791393826005613,
+          "medianFrameIou": 0.375,
+          "meanFrameIou": 0.3852866735743995,
+          "emptyFrames": 0,
+          "emptyFrameFalsePositiveRate": null
+        },
+        "rtiObservedT05": {
+          "frames": 465,
+          "iou": 0.20359555708233137,
+          "precision": 0.2123492177236355,
+          "recall": 0.8316183348924229,
+          "medianFrameIou": 0.2222222222222222,
+          "meanFrameIou": 0.23735134232354443,
+          "emptyFrames": 0,
+          "emptyFrameFalsePositiveRate": null
+        },
+        "rtiObservedValTuned": {
+          "frames": 465,
+          "iou": 0.2778440257572144,
+          "precision": 0.36180124223602483,
+          "recall": 0.5449017773620206,
+          "medianFrameIou": 0.26666666666666666,
+          "meanFrameIou": 0.2641221905196239,
+          "emptyFrames": 0,
+          "emptyFrameFalsePositiveRate": null
+        }
+      }
+    }
+  },
+  "test": {
+    "ridge": {
+      "frames": 1240,
+      "iou": 0.4073943039094286,
+      "precision": 0.51544315129812,
+      "recall": 0.6602637614678899,
+      "medianFrameIou": 0.4,
+      "meanFrameIou": 0.4373214005806196,
+      "emptyFrames": 318,
+      "emptyFrameFalsePositiveRate": 0.0
+    },
+    "rtiObservedT05": {
+      "frames": 1240,
+      "iou": 0.24616817681429418,
+      "precision": 0.2589063056644104,
+      "recall": 0.8334288990825688,
+      "medianFrameIou": 0.26666666666666666,
+      "meanFrameIou": 0.30234711536971814,
+      "emptyFrames": 318,
+      "emptyFrameFalsePositiveRate": 0.0
+    },
+    "rtiObservedT06": {
+      "frames": 1240,
+      "iou": 0.2708557878853201,
+      "precision": 0.30266168854630854,
+      "recall": 0.7204701834862385,
+      "medianFrameIou": 0.2727272727272727,
+      "meanFrameIou": 0.29782600519331,
+      "emptyFrames": 318,
+      "emptyFrameFalsePositiveRate": 0.0
+    },
+    "rtiObservedValTuned": {
+      "threshold": 0.8,
+      "frames": 1240,
+      "iou": 0.2897196261682243,
+      "precision": 0.4036089538602101,
+      "recall": 0.5065940366972477,
+      "medianFrameIou": 0.2857142857142857,
+      "meanFrameIou": 0.2935735553296566,
+      "emptyFrames": 318,
+      "emptyFrameFalsePositiveRate": 0.0
+    },
+    "rtiAllVoxelsT05": {
+      "frames": 1240,
+      "iou": 0.023440860215053764,
+      "precision": 0.023440860215053764,
+      "recall": 1.0,
+      "medianFrameIou": 0.025,
+      "meanFrameIou": 0.02344086021505376,
+      "emptyFrames": 318,
+      "emptyFrameFalsePositiveRate": 1.0
+    },
+    "ridgeOodFraction": 0.004032258064516129,
+    "byKind": {
+      "empty": {
+        "ridge": {
+          "frames": 155,
+          "iou": null,
+          "precision": null,
+          "recall": null,
+          "medianFrameIou": null,
+          "meanFrameIou": null,
+          "emptyFrames": 155,
+          "emptyFrameFalsePositiveRate": 0.0
+        },
+        "rtiObservedT05": {
+          "frames": 155,
+          "iou": null,
+          "precision": null,
+          "recall": null,
+          "medianFrameIou": null,
+          "meanFrameIou": null,
+          "emptyFrames": 155,
+          "emptyFrameFalsePositiveRate": 0.0
+        },
+        "rtiObservedValTuned": {
+          "frames": 155,
+          "iou": null,
+          "precision": null,
+          "recall": null,
+          "medianFrameIou": null,
+          "meanFrameIou": null,
+          "emptyFrames": 155,
+          "emptyFrameFalsePositiveRate": 0.0
+        }
+      },
+      "one": {
+        "ridge": {
+          "frames": 620,
+          "iou": 0.4110056925996205,
+          "precision": 0.5176864244741873,
+          "recall": 0.6660516605166051,
+          "medianFrameIou": 0.4,
+          "meanFrameIou": 0.4473345806519803,
+          "emptyFrames": 97,
+          "emptyFrameFalsePositiveRate": 0.0
+        },
+        "rtiObservedT05": {
+          "frames": 620,
+          "iou": 0.2815906338312475,
+          "precision": 0.29536311666313786,
+          "recall": 0.8579335793357934,
+          "medianFrameIou": 0.3333333333333333,
+          "meanFrameIou": 0.34165722138014293,
+          "emptyFrames": 97,
+          "emptyFrameFalsePositiveRate": 0.0
+        },
+        "rtiObservedValTuned": {
+          "frames": 620,
+          "iou": 0.3325517780382962,
+          "precision": 0.47701793721973096,
+          "recall": 0.523370233702337,
+          "medianFrameIou": 0.3,
+          "meanFrameIou": 0.31569877559923676,
+          "emptyFrames": 97,
+          "emptyFrameFalsePositiveRate": 0.0
+        }
+      },
+      "two": {
+        "ridge": {
+          "frames": 465,
+          "iou": 0.4042412193505633,
+          "precision": 0.5134680134680135,
+          "recall": 0.6552094522019334,
+          "medianFrameIou": 0.4,
+          "meanFrameIou": 0.4241963550234226,
+          "emptyFrames": 66,
+          "emptyFrameFalsePositiveRate": 0.0
+        },
+        "rtiObservedT05": {
+          "frames": 465,
+          "iou": 0.22056892778993437,
+          "precision": 0.23243658724058416,
+          "recall": 0.8120300751879699,
+          "medianFrameIou": 0.21052631578947367,
+          "meanFrameIou": 0.25082033480968774,
+          "emptyFrames": 66,
+          "emptyFrameFalsePositiveRate": 0.0
+        },
+        "rtiObservedValTuned": {
+          "frames": 465,
+          "iou": 0.25875706214689265,
+          "precision": 0.35312259059367773,
+          "recall": 0.49194414607948445,
+          "medianFrameIou": 0.25,
+          "meanFrameIou": 0.2645723267557458,
+          "emptyFrames": 66,
+          "emptyFrameFalsePositiveRate": 0.0
+        }
+      }
+    }
+  },
+  "comparisonNotes": [
+    "Metrics are pooled over all frames of the split (micro-averaged cell counts).",
+    "Ridge is evaluated on its per-frame output (no temporal smoothing) at 0.5, its validation-chosen operating point.",
+    "rtiObservedValTuned applies a threshold chosen on the validation scenes, so both models get an operating point tuned on identical data.",
+    "rti-bayes is the engine output of the same pipeline runs: per-voxel occupancy after the default EMA (0.5) and 3x3x3 box filter at 0.25 m voxels, projected to 0.5 m cells by max over z and over the 2x2 voxel columns of each cell.",
+    "rtiObserved* takes the max over voxels with posterior variance ratio <= 0.95 only. rti-bayes reports 0.5 ('unknown') for unobserved voxels, which include the entire bottom and top voxel layers here, so the all-voxel projection (rtiAllVoxelsT05) marks every cell occupied at threshold 0.5.",
+    "rtiObservedT06 uses the engine's default occupancyThreshold (0.6)."
+  ],
+  "runtime": {
+    "totalSeconds": 1095.7,
+    "generationSeconds": 1092.8,
+    "workers": 4,
+    "sceneSecondsMean": 89.2
+  },
+  "machine": {
+    "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39",
+    "processor": "x86_64",
+    "cpuCount": 4,
+    "python": "3.13.16",
+    "numpy": "2.5.4"
+  },
+  "createdAt": "2026-10-14T20:29:58+00:00",
+  "caveat": "Synthetic test scenes from the same simulator and geometry as training; not validated on real data."
+}

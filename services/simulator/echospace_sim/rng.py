@@ -120,3 +120,87 @@ class Rng:
             out[i] = sqrt(-2 * log(u1)) * cos(_TWO_PI * (r2 / _TWO_POW_32))
         self.s0, self.s1, self.s2, self.s3 = s0, s1, s2, s3
         return out
+
+
+class RngBank:
+    """Many independent xoshiro128** streams advanced in lockstep with NumPy.
+
+    Each lane yields exactly the sequence of the scalar :class:`Rng` with the same seed; the
+    bank only changes how the numbers are produced (a block of draws for all lanes at a time),
+    which removes the per-draw interpreter overhead when one stream per link is needed.
+    Lanes are consumed independently: a lane that runs out triggers a refill of every lane,
+    and unconsumed draws are kept, so the per-lane order is preserved under any access pattern.
+    """
+
+    def __init__(self, seeds: list[int], block: int = 4096) -> None:
+        import numpy as np
+
+        self._np = np
+        scalar = [Rng(s) for s in seeds]
+        self._s = np.array([[r.s0, r.s1, r.s2, r.s3] for r in scalar], dtype=np.uint32).T.copy()
+        self._block = block
+        self.lanes = [RngLane(self, i) for i in range(len(seeds))]
+
+    def _generate(self) -> list[list[int]]:
+        np = self._np
+        s0, s1, s2, s3 = (x.copy() for x in self._s)
+        n = self._block
+        out = np.empty((n, s0.size), dtype=np.uint32)
+        five, nine = np.uint32(5), np.uint32(9)
+        u7, u25, u9, u11, u21 = (np.uint32(v) for v in (7, 25, 9, 11, 21))
+        for i in range(n):
+            x = s1 * five
+            out[i] = ((x << u7) | (x >> u25)) * nine
+            t = s1 << u9
+            s2 ^= s0
+            s3 ^= s1
+            s1 ^= s2
+            s0 ^= s3
+            s2 ^= t
+            s3 = (s3 << u11) | (s3 >> u21)
+        self._s = np.stack([s0, s1, s2, s3])
+        cols: list[list[int]] = out.T.tolist()
+        return cols
+
+    def _refill(self) -> None:
+        for lane, fresh in zip(self.lanes, self._generate(), strict=True):
+            lane._buf = lane._buf[lane._pos :] + fresh
+            lane._pos = 0
+
+
+class RngLane:
+    """One stream of an :class:`RngBank`; same interface and outputs as :class:`Rng`."""
+
+    __slots__ = ("_bank", "_buf", "_pos", "index")
+
+    def __init__(self, bank: RngBank, index: int) -> None:
+        self._bank = bank
+        self._buf: list[int] = []
+        self._pos = 0
+        self.index = index
+
+    def _take(self, n: int) -> list[int]:
+        while self._pos + n > len(self._buf):
+            self._bank._refill()
+        out = self._buf[self._pos : self._pos + n]
+        self._pos += n
+        return out
+
+    def next_u32(self) -> int:
+        return self._take(1)[0]
+
+    def uniform(self) -> float:
+        return self._take(1)[0] / _TWO_POW_32
+
+    def normal(self) -> float:
+        r1, r2 = self._take(2)
+        u1 = 1 - r1 / _TWO_POW_32
+        return math.sqrt(-2 * math.log(u1)) * math.cos(_TWO_PI * (r2 / _TWO_POW_32))
+
+    def normals(self, n: int) -> list[float]:
+        raw = self._take(2 * n)
+        sqrt, log, cos = math.sqrt, math.log, math.cos
+        return [
+            sqrt(-2 * log(1 - raw[2 * i] / _TWO_POW_32)) * cos(_TWO_PI * (raw[2 * i + 1] / _TWO_POW_32))
+            for i in range(n)
+        ]

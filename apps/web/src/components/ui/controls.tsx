@@ -35,7 +35,7 @@ export function SliderField({ label, value, min, max, step, onChange, unit, help
         <S.Track className="relative h-[3px] grow rounded-full bg-line">
           <S.Range className="absolute h-full rounded-full bg-signal/70" />
         </S.Track>
-        <S.Thumb className="block h-3 w-3 rounded-full border border-signal bg-bg shadow focus-visible:outline-2 focus-visible:outline-signal" />
+        <S.Thumb aria-label={label} className="block h-3 w-3 rounded-full border border-signal bg-bg shadow focus-visible:outline-2 focus-visible:outline-signal" />
       </S.Root>
     </Field>
   );

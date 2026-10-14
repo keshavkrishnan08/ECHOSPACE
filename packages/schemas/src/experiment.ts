@@ -59,6 +59,11 @@ export const ExperimentRecord = z.object({
   /** SHA-256 over a canonical digest of the first N frames, used to verify deterministic replay. */
   replayDigest: z.string().nullable().default(null),
   replayDigestFrames: z.number().int().min(0).default(0),
+  /**
+   * Whether the live run matched the deterministic replay over the digest window. False when
+   * real-time backpressure dropped packets or skipped frames; null when unknown.
+   */
+  liveRunReproducible: z.boolean().nullable().default(null),
   summaries: z.array(MetricSummary).default([]),
   series: z.array(MetricSeries).default([]),
   events: z.array(z.object({ t: z.number(), kind: z.string(), message: z.string() })).default([]),

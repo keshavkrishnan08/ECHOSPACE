@@ -47,6 +47,10 @@ export interface SessionState {
   ridge: RidgeWeights | null;
   /** Mid-run reconfigurations with the frame sequence at which they took effect. */
   configChanges: Array<{ frameSeq: number; t: number; config: ScenarioConfig }>;
+  /** Engine-side digest of the first frames of this run (null until available). */
+  replayDigest: string | null;
+  /** False when backpressure dropped packets or skipped frames inside the digest window. */
+  replayDigestClean: boolean | null;
   /** Experiment id when this session is a replay. */
   replayOf: string | null;
   launch(config: ScenarioConfig, opts?: { scenarioKey?: string; variantId?: string | null; autoplay?: boolean; schedule?: Array<{ frameSeq: number; t: number; config: ScenarioConfig }>; replayOf?: string }): void;
@@ -89,6 +93,7 @@ export const useSession = create<SessionState>()((set, get) => {
     if (client) return client;
     client = new EngineClient({
       onReady: (info) => set({ info, status: info.calibrated ? "streaming" : "calibrating", error: null }),
+      onDigest: (digest, _frames, clean) => set({ replayDigest: digest, replayDigestClean: clean }),
       onReconfigured: (frameSeq, t) => {
         const cfg = pendingConfigs.shift();
         if (cfg) set((st) => ({ configChanges: [...st.configChanges, { frameSeq, t, config: cfg }].slice(-200) }));
@@ -142,6 +147,8 @@ export const useSession = create<SessionState>()((set, get) => {
     ridge: null,
     configChanges: [],
     replayOf: null,
+    replayDigest: null,
+    replayDigestClean: null,
 
     ensureBooted() {
       if (get().booted) return;
@@ -157,7 +164,7 @@ export const useSession = create<SessionState>()((set, get) => {
         config, launchConfig: config, scenarioKey: opts.scenarioKey ?? config.scenario, variantId: opts.variantId ?? null, sessionId: newSessionId(),
         sourceMode: "synthetic", sourceLabel: `Synthetic simulation · scenario ${config.scenario} · seed ${config.seed}`,
         status: "initializing", info: null, playing: false, finished: false, simTime: 0, live: true, cursorSeq: null,
-        selection: { kind: "none" }, startedAtMs: Date.now(), error: null, booted: true, displayDrops: 0, configChanges: opts.schedule ?? [], replayOf: opts.replayOf ?? null,
+        selection: { kind: "none" }, startedAtMs: Date.now(), error: null, booted: true, displayDrops: 0, configChanges: opts.schedule ?? [], replayOf: opts.replayOf ?? null, replayDigest: null,
       });
       const max = useSettings.getState().maxInFlightFrames;
       const go = (ridge: RidgeWeights | null) => {
@@ -175,7 +182,7 @@ export const useSession = create<SessionState>()((set, get) => {
       history.clear();
       set({
         config, launchConfig: config, scenarioKey: "custom", variantId: null, sessionId: newSessionId(), sourceMode: "recorded", sourceLabel: descriptor.label,
-        status: "initializing", info: null, playing: false, finished: false, simTime: 0, live: true, cursorSeq: null, startedAtMs: Date.now(), error: null, booted: true,
+        status: "initializing", info: null, playing: false, finished: false, simTime: 0, live: true, cursorSeq: null, startedAtMs: Date.now(), error: null, booted: true, replayDigest: null, replayOf: null, configChanges: [],
       });
       c().initRecorded(config, descriptor, packets, calibration, useSettings.getState().maxInFlightFrames);
     },
@@ -216,8 +223,8 @@ export const useSession = create<SessionState>()((set, get) => {
     restart() {
       history.clear();
       arrivals.length = 0;
-      set((st) => ({ simTime: 0, finished: false, cursorSeq: null, live: true, startedAtMs: Date.now(), status: "initializing", configChanges: [], launchConfig: st.config }));
-      c().send({ type: "restart" });
+      set((st) => ({ simTime: 0, finished: false, cursorSeq: null, live: true, startedAtMs: Date.now(), status: "initializing", configChanges: [], launchConfig: st.config, replayDigest: null, replayOf: null }));
+      c().send({ type: "restart", epoch: c().nextEpoch() });
     },
     applyConfig(cfg) {
       pendingConfigs.push(cfg);

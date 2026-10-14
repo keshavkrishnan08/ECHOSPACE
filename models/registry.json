@@ -1,0 +1,212 @@
+[
+  {
+    "id": "rti-bayes",
+    "name": "Bayesian radio tomographic imaging",
+    "family": "classical",
+    "version": "1.0.0",
+    "status": "available",
+    "description": "Linear-Gaussian attenuation tomography: per-link ΔRSS is modelled as a weighted sum of voxel attenuation inside each link's Fresnel-like ellipsoid, with an exponentially correlated Gaussian prior. Reports the posterior mean, posterior variance ratio and a null-hypothesis detection score per voxel.",
+    "inputSchema": "deltaRssDb[L] (dB, clipped to [-3, 25]); link geometry (tx/rx positions); NaN marks links without data in the frame",
+    "outputSchema": "per-voxel image (posterior-mean attenuation density), varianceRatio in [0,1], occupancy in [0,1] on the recon.voxelSizeM grid",
+    "preprocessingVersion": "pp-1.0.0",
+    "inferenceDevice": "cpu (browser worker or Python reference; optional native C++ kernel)",
+    "confidenceSemantics": "occupancy = Φ(z − z₀) where z is the null-hypothesis z-score of the posterior mean and z₀ = recon.detectionZ; 0.5 for unobserved voxels (variance ratio > 0.95). A detection confidence under the stated noise model, not a calibrated probability.",
+    "supportedTasks": [
+      "occupancy-3d",
+      "occupancy-floor",
+      "localization",
+      "tracking"
+    ],
+    "providesJoints": false,
+    "trainingDataset": null,
+    "knownLimitations": [
+      "Shadowing only: subjects away from link lines, or low (seated) subjects, produce little attenuation.",
+      "No vertical resolution worth the name with perimeter nodes at two heights; floor and ceiling voxel layers are unobserved.",
+      "Assumes a static empty-room baseline; furniture moves or drift bias ΔRSS.",
+      "Needs at least 3 usable links with crossing geometry; reports unsupported otherwise.",
+      "Prior and noise parameters are set by hand, not fitted."
+    ],
+    "requirements": [
+      "Known sensor geometry",
+      "Empty-room calibration capture",
+      "At least 3 links"
+    ],
+    "evaluation": [
+      {
+        "dataset": "synthetic-ridge-v1",
+        "split": "test",
+        "metric": "floor-iou@0.5",
+        "value": 0.2462,
+        "note": "synthetic test scenes (8 held-out scenes, 1240 frames, scenario-B geometry); not validated on real data; engine output after EMA + 3x3x3 box filter, max over observed voxels (variance ratio <= 0.95), threshold 0.5; 0.5 m floor cells, pooled over frames"
+      },
+      {
+        "dataset": "synthetic-ridge-v1",
+        "split": "test",
+        "metric": "precision@0.5",
+        "value": 0.2589,
+        "note": "synthetic test scenes (8 held-out scenes, 1240 frames, scenario-B geometry); not validated on real data; engine output after EMA + 3x3x3 box filter, max over observed voxels (variance ratio <= 0.95), threshold 0.5; 0.5 m floor cells, pooled over frames"
+      },
+      {
+        "dataset": "synthetic-ridge-v1",
+        "split": "test",
+        "metric": "recall@0.5",
+        "value": 0.8334,
+        "note": "synthetic test scenes (8 held-out scenes, 1240 frames, scenario-B geometry); not validated on real data; engine output after EMA + 3x3x3 box filter, max over observed voxels (variance ratio <= 0.95), threshold 0.5; 0.5 m floor cells, pooled over frames"
+      },
+      {
+        "dataset": "synthetic-ridge-v1",
+        "split": "test",
+        "metric": "floor-iou@val-tuned",
+        "value": 0.2897,
+        "note": "synthetic test scenes (8 held-out scenes, 1240 frames, scenario-B geometry); not validated on real data; threshold 0.8 chosen on the validation scenes"
+      }
+    ],
+    "references": [
+      "J. Wilson and N. Patwari, \"Radio Tomographic Imaging with Wireless Networks,\" IEEE Transactions on Mobile Computing, vol. 9, no. 5, pp. 621-632, 2010."
+    ]
+  },
+  {
+    "id": "bp-dsb",
+    "name": "Coherent delay-and-sum back-projection",
+    "family": "classical",
+    "version": "1.0.0",
+    "status": "experimental",
+    "description": "Matches the background-subtracted CSI of each link against the single-bounce delay of every voxel and sums the coherent energy over subcarriers, antennas and links.",
+    "inputSchema": "sanitized CSI per link [antenna × subcarrier] minus the empty-room background; tx and receive-antenna positions; subcarrier frequencies",
+    "outputSchema": "per-voxel image (mean per-link coherent energy relative to calibration), occupancy in [0,1]",
+    "preprocessingVersion": "pp-1.0.0",
+    "inferenceDevice": "cpu (browser worker; optional native C++ kernel)",
+    "confidenceSemantics": "occupancy = 1 / (1 + exp(−(image − 6) / 1.5)): an uncalibrated heuristic mapping with hand-chosen constants, not a probability. varianceRatio shows rti-bayes link coverage only.",
+    "supportedTasks": [
+      "occupancy-3d",
+      "localization"
+    ],
+    "providesJoints": false,
+    "trainingDataset": null,
+    "knownLimitations": [
+      "40 MHz bandwidth gives ~7.5 m range resolution; images are broad with grating lobes.",
+      "Non-single-bounce multipath produces ghost energy by construction.",
+      "Sensitive to residual inter-antenna phase errors.",
+      "Not implemented in the Python reference pipeline.",
+      "No quantitative evaluation published."
+    ],
+    "requirements": [
+      "Known sensor and receive-antenna geometry",
+      "Empty-room background capture",
+      "Phase-coherent antennas"
+    ],
+    "evaluation": [],
+    "references": []
+  },
+  {
+    "id": "ridge-floor",
+    "name": "Ridge floor occupancy",
+    "family": "shallow-learned",
+    "version": "1.0.0",
+    "status": "available",
+    "description": "Closed-form ridge regression from per-link ΔRSS and motion energy (56 features) to a 12 × 10 grid of 0.5 m floor cells, trained on synthetic scenes for the scenario-B room and node layout only.",
+    "inputSchema": "[deltaRssDb[28], motionEnergy[28]] in buildLinks order; NaN replaced by the training mean; standardized with training mean/std",
+    "outputSchema": "floor score per 0.5 m cell (12 × 10, x fastest) in [0,1]; the engine extrudes it to z < 1.8 m",
+    "preprocessingVersion": "pp-1.0.0",
+    "inferenceDevice": "cpu (browser worker, JavaScript)",
+    "confidenceSemantics": "Clipped linear score. The raw least-squares output is rescaled by 1.6667 so that 0.5 corresponds to the validation-optimal raw threshold 0.3; scores are detection scores, not probabilities. Frames with mean |z| > oodMaxMeanAbsZ are flagged as distribution shift (degraded).",
+    "supportedTasks": [
+      "occupancy-floor",
+      "localization"
+    ],
+    "providesJoints": false,
+    "trainingDataset": "synthetic-ridge-v1",
+    "knownLimitations": [
+      "Valid only for the exact training geometry (6.00×5.00×2.80 m room, 8 perimeter nodes of scenario B); refuses to run elsewhere (geometryKey check).",
+      "Trained and evaluated only on synthetic data from the same simplified simulator; no real-data validation.",
+      "Linear model of 56 features: cannot separate nearby subjects or represent interactions between links.",
+      "No vertical resolution; no temporal model beyond the engine's EMA.",
+      "Train IoU 0.57 vs. test 0.41 indicates the scene variety (34 training scenes) limits generalization even within the simulator."
+    ],
+    "requirements": [
+      "Scenario-B geometry",
+      "Empty-room calibration",
+      "weights.json loaded by the engine"
+    ],
+    "evaluation": [
+      {
+        "dataset": "synthetic-ridge-v1",
+        "split": "test",
+        "metric": "floor-iou@0.5",
+        "value": 0.4074,
+        "note": "synthetic test scenes (8 held-out scenes, 1240 frames, scenario-B geometry); not validated on real data; operating point chosen on validation scenes; 0.5 m floor cells, pooled over frames"
+      },
+      {
+        "dataset": "synthetic-ridge-v1",
+        "split": "test",
+        "metric": "precision@0.5",
+        "value": 0.5154,
+        "note": "synthetic test scenes (8 held-out scenes, 1240 frames, scenario-B geometry); not validated on real data; operating point chosen on validation scenes; 0.5 m floor cells, pooled over frames"
+      },
+      {
+        "dataset": "synthetic-ridge-v1",
+        "split": "test",
+        "metric": "recall@0.5",
+        "value": 0.6603,
+        "note": "synthetic test scenes (8 held-out scenes, 1240 frames, scenario-B geometry); not validated on real data; operating point chosen on validation scenes; 0.5 m floor cells, pooled over frames"
+      }
+    ],
+    "references": [
+      "A. E. Hoerl and R. W. Kennard, \"Ridge Regression: Biased Estimation for Nonorthogonal Problems,\" Technometrics, vol. 12, no. 1, pp. 55-67, 1970."
+    ]
+  },
+  {
+    "id": "tcn-encoder",
+    "name": "Temporal convolutional encoder",
+    "family": "tcn",
+    "version": "0.0.0",
+    "status": "unavailable",
+    "description": "Interface slot only; no trained weights. Selecting it yields modelStatus 'unsupported' and no output.",
+    "inputSchema": "intended: window of per-link features or CSI amplitude/phase (pp-1.0.0)",
+    "outputSchema": "intended: occupancy grid as other models",
+    "preprocessingVersion": "pp-1.0.0",
+    "inferenceDevice": "none",
+    "confidenceSemantics": "not applicable: produces no output",
+    "supportedTasks": [],
+    "providesJoints": false,
+    "trainingDataset": null,
+    "knownLimitations": [
+      "No weights exist.",
+      "Would need recorded data with ground truth across many rooms (see model card).",
+      "Must beat ridge-floor and rti-bayes on the same splits before being enabled."
+    ],
+    "requirements": [
+      "Trained weights",
+      "Held-out evaluation"
+    ],
+    "evaluation": [],
+    "references": []
+  },
+  {
+    "id": "transformer-encoder",
+    "name": "Transformer encoder",
+    "family": "transformer",
+    "version": "0.0.0",
+    "status": "unavailable",
+    "description": "Interface slot only; no trained weights. Selecting it yields modelStatus 'unsupported' and no output.",
+    "inputSchema": "intended: window of per-link features or CSI amplitude/phase (pp-1.0.0)",
+    "outputSchema": "intended: occupancy grid as other models",
+    "preprocessingVersion": "pp-1.0.0",
+    "inferenceDevice": "none",
+    "confidenceSemantics": "not applicable: produces no output",
+    "supportedTasks": [],
+    "providesJoints": false,
+    "trainingDataset": null,
+    "knownLimitations": [
+      "No weights exist.",
+      "Would need recorded data with ground truth across many rooms (see model card).",
+      "Must beat ridge-floor and rti-bayes on the same splits before being enabled."
+    ],
+    "requirements": [
+      "Trained weights",
+      "Held-out evaluation"
+    ],
+    "evaluation": [],
+    "references": []
+  }
+]

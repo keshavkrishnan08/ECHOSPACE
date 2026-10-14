@@ -20,7 +20,8 @@ export type ToWorker =
   | { type: "pause" }
   | { type: "speed"; speed: number }
   | { type: "step"; frames: number }
-  | { type: "restart" }
+  | { type: "restart"; epoch: number }
+  | { type: "epoch"; epoch: number }
   | { type: "reconfigure"; config: ScenarioConfig }
   | { type: "select-link"; index: number }
   | { type: "recalibrate" }
@@ -30,6 +31,7 @@ export type ToWorker =
 export type FromWorker =
   | { type: "ready"; info: EngineInfo }
   | { type: "reconfigured"; frameSeq: number; t: number }
-  | { type: "frames"; frames: ReconstructionFrame[]; simTime: number; displayDrops: number }
+  | { type: "digest"; epoch: number; digest: string; frames: number; clean: boolean }
+  | { type: "frames"; frames: ReconstructionFrame[]; simTime: number; displayDrops: number; epoch: number }
   | { type: "status"; playing: boolean; simTime: number; finished: boolean; message?: string }
   | { type: "error"; message: string; fatal: boolean };

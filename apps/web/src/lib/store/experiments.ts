@@ -2,6 +2,7 @@
 import { ExperimentRecord, PREPROCESSING_VERSION, SOFTWARE_VERSION, type MetricSeries, type MetricSummary } from "@echospace/schemas";
 import { canonicalJson, percentile, stableHash } from "@echospace/engine";
 import { history, type FrameSummary } from "../engine/history";
+import { DIGEST_FRAMES, deterministicDigest } from "../engine/digest";
 import { apiFetch } from "../api/client";
 import { useSession } from "./session";
 
@@ -76,19 +77,7 @@ export function seriesFrom(rows: FrameSummary[], maxPoints = 1200): MetricSeries
   return SERIES_KEYS.map((k) => ({ id: k, t: picked.map((r) => r.t), v: picked.map((r) => (r[k] as number | null) ?? null) }));
 }
 
-/** Digest of the first N frames: quantized occupancy + link features, hashed with SHA-256. */
-export async function digestFrames(frames: Array<{ occupancy: Float32Array; features: { deltaRssDb: Float32Array } }>): Promise<string> {
-  const parts: number[] = [];
-  for (const f of frames) {
-    for (let i = 0; i < f.occupancy.length; i += 7) parts.push(Math.round(f.occupancy[i] * 1e4));
-    for (const v of f.features.deltaRssDb) parts.push(Number.isFinite(v) ? Math.round(v * 1e3) : -999999);
-  }
-  const buf = new TextEncoder().encode(parts.join(","));
-  const hash = await crypto.subtle.digest("SHA-256", buf);
-  return Array.from(new Uint8Array(hash)).map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-export const DIGEST_FRAMES = 40;
+export { DIGEST_FRAMES } from "../engine/digest";
 
 export function machineInfo() {
   const nav = typeof navigator !== "undefined" ? (navigator as Navigator & { deviceMemory?: number }) : null;
@@ -111,10 +100,9 @@ export function machineInfo() {
 
 export async function buildExperiment(name: string, notes: string, tags: string[] = [], baselineOf: string | null = null): Promise<ExperimentRecord> {
   const s = useSession.getState();
-  const frames = history.ordered();
+  const reference = await deterministicDigest(s.launchConfig, s.configChanges, s.ridge).catch(() => null);
+  const liveRunReproducible = reference && s.replayDigest ? reference === s.replayDigest : null;
   const rows = history.summaries;
-  const firstFrames = frames.filter((f) => f.seq < DIGEST_FRAMES);
-  const digestOk = firstFrames.length === DIGEST_FRAMES && firstFrames[0].seq === 0;
   const latest = history.latest();
   const id = `exp_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
   return ExperimentRecord.parse({
@@ -136,8 +124,9 @@ export async function buildExperiment(name: string, notes: string, tags: string[
     endedAt: new Date().toISOString(),
     simulatedDurationS: s.simTime,
     frames: rows.length,
-    replayDigest: digestOk ? await digestFrames(firstFrames) : null,
-    replayDigestFrames: digestOk ? DIGEST_FRAMES : 0,
+    replayDigest: reference,
+    replayDigestFrames: reference ? DIGEST_FRAMES : 0,
+    liveRunReproducible,
     summaries: summarize(rows),
     series: seriesFrom(rows),
     events: history.events.slice(-500).map((e) => ({ t: e.t, kind: e.kind, message: e.message })),

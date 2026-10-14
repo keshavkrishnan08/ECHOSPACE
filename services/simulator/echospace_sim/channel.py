@@ -26,7 +26,7 @@ import numpy.typing as npt
 
 from .config import MATERIAL_PENETRATION_DB, Obstacle, ScenarioConfig
 from .geometry import C_LIGHT, Vec3, dist, segment_box_overlap, segment_segment_distance
-from .rng import STREAM, Rng, derive_seed
+from .rng import STREAM, RngBank, derive_seed
 from .scene import (
     LinkDescriptor,
     antenna_positions,
@@ -179,7 +179,7 @@ class ChannelSimulator:
             }
             self._state.append(_LinkState(ants, paths, static_sum, missing))
         self._burst_remaining = [0] * len(self.links)
-        self._rngs = [Rng(derive_seed(config.seed, rng_stream, link.index)) for link in self.links]
+        self._rngs = RngBank([derive_seed(config.seed, rng_stream, link.index) for link in self.links]).lanes
 
     def _field(self, amplitude: FloatArray, length: FloatArray) -> ComplexArray:
         """a·exp(−j2πf_k L/c) for every element; `amplitude` and `length` share a shape (..., M)."""
@@ -268,7 +268,7 @@ class ChannelSimulator:
 
     def reset_impairments(self, rng_stream: int = STREAM.impairments) -> None:
         self._burst_remaining = [0] * len(self.links)
-        self._rngs = [Rng(derive_seed(self.cfg.seed, rng_stream, link.index)) for link in self.links]
+        self._rngs = RngBank([derive_seed(self.cfg.seed, rng_stream, link.index) for link in self.links]).lanes
 
     def packets(self, seq: int, subjects: list[SubjectState]) -> list[CsiPacket | None]:
         """One packet per link for sequence number `seq` (None for dropped packets).
