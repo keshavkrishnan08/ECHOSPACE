@@ -14,6 +14,58 @@ import { RecordingFormatError, parseNative, type ParsedRecording } from "./nativ
  */
 const DEFAULT_HEADER = ["type", "role", "mac", "rssi", "rate", "sig_mode", "mcs", "bandwidth", "smoothing", "not_sounding", "aggregation", "stbc", "fec_coding", "sgi", "noise_floor", "ampdu_cnt", "channel", "secondary_channel", "local_timestamp", "ant", "sig_len", "rx_state", "real_time_set", "real_timestamp", "len", "CSI_DATA"];
 
+export interface Esp32Row {
+  mac: string;
+  ts: number;
+  rssi: number;
+  ch: number;
+  re: Float32Array;
+  im: Float32Array;
+}
+
+/** Parses one CSI_DATA line; returns null for non-CSI or malformed lines. */
+export function parseEsp32Row(line: string, header: string[] = DEFAULT_HEADER): Esp32Row | null {
+  const t = line.trim();
+  if (!t.startsWith("CSI_DATA")) return null;
+  const lb = t.indexOf("[");
+  const rb = t.lastIndexOf("]");
+  if (lb < 0 || rb < lb) return null;
+  const fields = t.slice(0, lb).split(",");
+  const col = (n: string) => fields[header.indexOf(n)];
+  const values = t.slice(lb + 1, rb).trim().split(/[\s,]+/).filter(Boolean).map(Number);
+  if (!values.length || values.length % 2 || values.some((v) => !Number.isFinite(v))) return null;
+  const K = values.length / 2;
+  const re = new Float32Array(K);
+  const im = new Float32Array(K);
+  for (let k = 0; k < K; k++) {
+    im[k] = values[2 * k];
+    re[k] = values[2 * k + 1];
+  }
+  return { mac: col("mac") ?? "unknown", ts: Number(col("local_timestamp")), rssi: Number(col("rssi")), ch: Number(col("channel")), re, im };
+}
+
+export const ESP32_DEFAULT_HEADER = DEFAULT_HEADER;
+
+export function esp32Descriptor(K: number, mac: string, channel: number, label: string): SourceDescriptor {
+  return {
+    mode: "hardware",
+    adapter: "esp32-serial",
+    id: `esp32-serial:${mac}`,
+    label,
+    sampleFormat: `ESP32-CSI-Tool serial lines: int8 (imag, real) pairs, ${K} subcarriers, 1 antenna`,
+    links: [{ index: 0, id: `${mac}>esp32`, txId: mac, rxId: "esp32", tx: [0, 0, 0], rx: [0, 0, 0], lengthM: 0, antennas: 1 }],
+    antennas: [1],
+    subcarriers: K,
+    subcarrierOffsetsHz: Float64Array.from({ length: K }, (_, k) => (k - K / 2) * 312.5e3),
+    centerFreqHz: Number.isFinite(channel) ? CHANNEL_MHZ(channel) * 1e6 : null,
+    packetRateHz: null,
+    geometryKnown: false,
+    hasGroundTruth: false,
+    timestampSource: "ESP32 local_timestamp (µs, device clock)",
+    notes: ["Experimental adapter: not validated with physical hardware in this build.", "Only the first transmitter MAC seen is used as the link."],
+  };
+}
+
 const CHANNEL_MHZ = (ch: number) => (ch >= 1 && ch <= 13 ? 2407 + 5 * ch : ch === 14 ? 2484 : 5000 + 5 * ch);
 
 export function parseEsp32Csv(text: string, name = "esp32"): ParsedRecording {

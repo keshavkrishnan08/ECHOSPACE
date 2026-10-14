@@ -1,3 +1,5 @@
+import { DiagnosticsPage } from "@/components/system/DiagnosticsPage";
+
 export default function Page() {
-  return <div className="p-6 text-sm text-muted">Coming up.</div>;
+  return <DiagnosticsPage />;
 }

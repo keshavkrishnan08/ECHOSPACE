@@ -1,12 +1,9 @@
 "use client";
 import * as T from "@radix-ui/react-tooltip";
-import { useSyncExternalStore } from "react";
+import { useHydrated } from "@/lib/useHydrated";
 
 export const TooltipProvider = T.Provider;
 
-const subscribe = () => () => {};
-/** True on the client after hydration; tooltips are attached only then to keep SSR markup stable. */
-const useHydrated = () => useSyncExternalStore(subscribe, () => true, () => false);
 
 export function Tip({ content, children, side = "top" }: { content: React.ReactNode; children: React.ReactNode; side?: "top" | "bottom" | "left" | "right" }) {
   const hydrated = useHydrated();

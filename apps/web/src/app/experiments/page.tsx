@@ -1,3 +1,10 @@
+import { Suspense } from "react";
+import { ExperimentsPage } from "@/components/experiments/ExperimentsPage";
+
 export default function Page() {
-  return <div className="p-6 text-sm text-muted">Coming up.</div>;
+  return (
+    <Suspense>
+      <ExperimentsPage />
+    </Suspense>
+  );
 }

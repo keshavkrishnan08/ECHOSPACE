@@ -8,6 +8,7 @@ import { Kbd, Badge } from "@/components/ui/badge";
 import { Tip } from "@/components/ui/tooltip";
 import { Segmented } from "@/components/ui/controls";
 import { useApiHealth } from "@/lib/api/client";
+import { useReplay } from "@/lib/store/replay";
 import { SourceBadge, StateBadge } from "./StatusIndicators";
 
 export function TopBar() {
@@ -15,6 +16,7 @@ export function TopBar() {
   const ui = useUi();
   const stale = useStale();
   const api = useApiHealth();
+  const replay = useReplay();
   return (
     <header className="flex h-11 shrink-0 items-center gap-3 border-b border-line bg-surface px-3">
       <div className="flex min-w-0 items-center gap-2 text-xs">
@@ -38,7 +40,12 @@ export function TopBar() {
           </button>
         </Tip>
       )}
-      {s.replayOf && <Badge tone="geometry">Replay of {s.replayOf}</Badge>}
+      {s.replayOf && (
+        <Badge tone={replay.status === "verified" ? "ok" : replay.status === "mismatch" ? "err" : "geometry"}>
+          Replay of {s.replayOf}
+          {replay.status === "verified" ? " · reproduced" : replay.status === "mismatch" ? " · digest mismatch" : replay.status === "running" ? " · verifying" : ""}
+        </Badge>
+      )}
       <div className="ml-auto flex items-center gap-1.5">
         <span className="num hidden text-2xs text-muted lg:inline">t = {s.simTime.toFixed(1)} s</span>
         <Tip content={s.playing ? "Pause (Space)" : "Play (Space)"}>
