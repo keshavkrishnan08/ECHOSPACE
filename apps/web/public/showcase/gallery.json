@@ -1,0 +1,86 @@
+[
+  {
+    "file": "gallery/overview.png",
+    "title": "Mission control",
+    "caption": "The overview with a live 3D preview, the session inspector and metrics measured from the running engine. Every metric has a definition and a source.",
+    "group": "Product"
+  },
+  {
+    "file": "gallery/lab-live.png",
+    "title": "Live Spatial Lab",
+    "caption": "Scene configuration on the left, the reconstruction in the centre and the inspector on the right. Tracks carry two sigma ellipses; ground truth stays dashed.",
+    "group": "Product"
+  },
+  {
+    "file": "gallery/lab-unobserved.png",
+    "title": "Unknown is not empty",
+    "caption": "Amber points mark voxels that no link constrains. The posterior variance separates them from regions that are confidently empty.",
+    "group": "Situations"
+  },
+  {
+    "file": "gallery/studio-doppler.png",
+    "title": "Doppler spectrogram",
+    "caption": "Micro Doppler from a walking subject on one link, computed from sanitized channel state. Each column is one frame.",
+    "group": "Signals"
+  },
+  {
+    "file": "gallery/studio-phase.png",
+    "title": "Magnitude and phase",
+    "caption": "Per subcarrier magnitude and sanitized phase for three receive antennas. Frequency selective fading shows as ripples.",
+    "group": "Signals"
+  },
+  {
+    "file": "gallery/studio-pipeline.png",
+    "title": "Twelve stage pipeline",
+    "caption": "Each stage reports shapes, dtype, measured time and queue state. Channel estimation is marked not applicable because the source already provides CSI.",
+    "group": "Technical design"
+  },
+  {
+    "file": "gallery/studio-performance.png",
+    "title": "Latency profiling",
+    "caption": "Processing time and wall clock latency are kept apart. Percentiles only appear once enough samples exist.",
+    "group": "Technical design"
+  },
+  {
+    "file": "gallery/arena-crossing.png",
+    "title": "Three people crossing",
+    "caption": "Scenario E with link attenuation over time, simulation metrics and an event log that records identity switches.",
+    "group": "Situations"
+  },
+  {
+    "file": "gallery/arena-failure.png",
+    "title": "An explained failure",
+    "caption": "With two nodes there is one link. The model reports insufficient observations and draws nothing rather than inventing a reconstruction.",
+    "group": "Situations"
+  },
+  {
+    "file": "gallery/arena-multipath.png",
+    "title": "Multipath ghosts",
+    "caption": "Concrete walls and a coherent back projection model. Reflections put energy where nobody stands.",
+    "group": "Situations"
+  },
+  {
+    "file": "gallery/workbench-sidebyside.png",
+    "title": "Side by side reconstruction",
+    "caption": "Ground truth, a baseline model and the current model at the same timestamp with a shared camera.",
+    "group": "Research"
+  },
+  {
+    "file": "gallery/models.png",
+    "title": "Model registry",
+    "caption": "Model cards with schemas, confidence semantics, limitations and held out evaluation. Untrained slots are listed but cannot run.",
+    "group": "Research"
+  },
+  {
+    "file": "gallery/hardware.png",
+    "title": "Hardware readiness",
+    "caption": "A live checklist for a physical CSI source, gated on operator authorisation and consent. The adapter is labelled experimental.",
+    "group": "Research"
+  },
+  {
+    "file": "gallery/experiments.png",
+    "title": "Reproducible experiments",
+    "caption": "A saved run with provenance, metric summaries, exports and a replay digest that verifies reproduction.",
+    "group": "Research"
+  }
+]

@@ -1,5 +1,5 @@
 "use client";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { X } from "lucide-react";
 import { useUi } from "@/lib/store/ui";
@@ -87,12 +87,11 @@ export function TourOverlay() {
   const step = useUi((s) => s.tourStep);
   const setTour = useUi((s) => s.setTour);
   const router = useRouter();
-  const path = usePathname();
   const cur = step !== null ? TOUR[step] : null;
   useEffect(() => {
     if (!cur) return;
-    const target = cur.path.split("?")[0];
-    if (path !== target) router.push(cur.path);
+    const here = `${window.location.pathname}${window.location.search}`;
+    if (here !== cur.path) router.push(cur.path);
     cur.enter?.();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);

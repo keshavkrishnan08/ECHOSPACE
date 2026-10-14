@@ -1,10 +1,11 @@
 // Records the two showcase walkthroughs with Playwright and writes WebVTT subtitles whose cue
 // times come from the moments the script actually performs each step.
 //
-//   node scripts/showcase/record.mjs [baseUrl]        (default http://localhost:3100)
+//   node scripts/showcase/record.mjs [baseUrl] [demo-1|demo-2]   (default http://localhost:3100)
 //
-// Output: public/showcase/demo-{1,2}.webm and matching .vtt files.
-import { existsSync, mkdirSync, renameSync, writeFileSync } from "node:fs";
+// Output: public/showcase/demo-{1,2}.mp4 (H.264) and matching .vtt files.
+import { execFileSync } from "node:child_process";
+import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "@playwright/test";
@@ -12,6 +13,7 @@ import { chromium } from "@playwright/test";
 const here = dirname(fileURLToPath(import.meta.url));
 const out = join(here, "../../public/showcase");
 const base = process.argv[2] ?? "http://localhost:3100";
+const only = process.argv[3] ?? null;
 const W = 1440;
 const H = 900;
 const local = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
@@ -26,15 +28,32 @@ const fmt = (ms) => {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${s}`;
 };
 
+/**
+ * Frames come from the DevTools screencast (each with its own timestamp) and are encoded with
+ * ffmpeg's concat demuxer, so frame timing and subtitle timing share one clock.
+ */
 async function record(name, script) {
+  if (only && only !== name) return;
   const browser = await chromium.launch({
     executablePath: process.env.PLAYWRIGHT_CHROMIUM ?? (existsSync(local) ? local : undefined),
     args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"],
   });
-  const ctx = await browser.newContext({ viewport: { width: W, height: H }, recordVideo: { dir: join(out, ".raw"), size: { width: W, height: H } } });
+  const ctx = await browser.newContext({ viewport: { width: W, height: H } });
+  const page = await ctx.newPage();
+  const framesDir = join(out, ".raw", name);
+  rmSync(framesDir, { recursive: true, force: true });
+  mkdirSync(framesDir, { recursive: true });
+  const frames = [];
+  const cdp = await ctx.newCDPSession(page);
+  cdp.on("Page.screencastFrame", async (f) => {
+    const file = join(framesDir, `${String(frames.length).padStart(6, "0")}.jpg`);
+    writeFileSync(file, Buffer.from(f.data, "base64"));
+    frames.push({ file, t: f.metadata.timestamp * 1000 });
+    await cdp.send("Page.screencastFrameAck", { sessionId: f.sessionId }).catch(() => {});
+  });
+  await cdp.send("Page.startScreencast", { format: "jpeg", quality: 85, maxWidth: W, maxHeight: H, everyNthFrame: 1 });
   const t0 = Date.now();
   const cues = [];
-  const page = await ctx.newPage();
   const say = async (text, holdMs = 6000) => {
     const start = Date.now() - t0;
     if (cues.length) cues[cues.length - 1].end = Math.min(cues[cues.length - 1].end, start);
@@ -44,16 +63,29 @@ async function record(name, script) {
   const wait = (ms) => page.waitForTimeout(ms);
   try {
     await script({ page, say, wait });
+  } catch (e) {
+    console.error(`[${name}] step failed:`, e);
+    throw e;
   } finally {
     const total = Date.now() - t0;
-    cues[cues.length - 1].end = Math.min(cues[cues.length - 1].end, total);
-    const video = page.video();
+    await cdp.send("Page.stopScreencast").catch(() => {});
     await ctx.close();
     await browser.close();
-    const raw = await video.path();
-    renameSync(raw, join(out, `${name}.webm`));
+    if (cues.length) cues[cues.length - 1].end = Math.min(cues[cues.length - 1].end, total);
+    // concat list: each frame lasts until the next one; the last one until the end of the script
+    const lines = ["ffconcat version 1.0"];
+    frames.forEach((f, i) => {
+      const next = i + 1 < frames.length ? frames[i + 1].t : t0 + total;
+      const startMs = i === 0 ? t0 : f.t;
+      lines.push(`file '${f.file}'`, `duration ${Math.max(0.001, (next - startMs) / 1000).toFixed(3)}`);
+    });
+    if (frames.length) lines.push(`file '${frames[frames.length - 1].file}'`);
+    const list = join(framesDir, "list.txt");
+    writeFileSync(list, lines.join("\n"));
+    execFileSync("ffmpeg", ["-y", "-hide_banner", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", list, "-vf", "fps=15,format=yuv420p,scale=1440:-2", "-c:v", "libx264", "-preset", "slow", "-crf", "30", "-movflags", "+faststart", join(out, `${name}.mp4`)]);
     writeFileSync(join(out, `${name}.vtt`), ["WEBVTT", "", ...cues.flatMap((c, i) => [String(i + 1), `${fmt(c.start)} --> ${fmt(c.end)}`, c.text, ""])].join("\n"));
-    console.log(`[${name}] ${(total / 1000).toFixed(0)} s, ${cues.length} cues`);
+    rmSync(framesDir, { recursive: true, force: true });
+    console.log(`[${name}] ${(total / 1000).toFixed(0)} s, ${frames.length} frames, ${cues.length} cues`);
   }
 }
 

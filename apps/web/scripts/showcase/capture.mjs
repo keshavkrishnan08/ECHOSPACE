@@ -88,9 +88,14 @@ await page.goto(base + "/hardware");
 await wait(4000);
 await shot("hardware", "Hardware readiness", "A live checklist for a physical CSI source, gated on operator authorisation and consent. The adapter is labelled experimental.", "Research");
 
-await page.goto(base + "/experiments");
+await page.goto(base + "/lab");
+await wait(9000);
+await page.getByTestId("save-experiment").click();
+await page.getByTestId("experiment-name").fill("Scenario B baseline run");
+await page.getByTestId("confirm-save").click();
+await page.waitForURL(/experiments\?id=/, { timeout: 60000 });
 await wait(4000);
-await shot("experiments", "Reproducible experiments", "Saved runs with provenance, metric summaries, exports and a replay digest that verifies reproduction.", "Research");
+await shot("experiments", "Reproducible experiments", "A saved run with provenance, metric summaries, exports and a replay digest that verifies reproduction.", "Research");
 
 writeFileSync(join(here, "../../public/showcase/gallery.json"), JSON.stringify(shots, null, 2));
 await browser.close();

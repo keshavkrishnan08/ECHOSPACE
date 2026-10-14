@@ -45,7 +45,7 @@ function VideoCard({ id, title, blurb }: { id: string; title: string; blurb: str
         <h2 className="text-sm font-semibold">{title}</h2>
         <p className="mb-3 mt-0.5 max-w-3xl text-xs text-muted">{blurb}</p>
         <video ref={ref} controls preload="metadata" className="aspect-[16/10] w-full rounded border border-line bg-bg" onTimeUpdate={(e) => setNow(e.currentTarget.currentTime)}>
-          <source src={`/showcase/${id}.webm`} type="video/webm" />
+          <source src={`/showcase/${id}.mp4`} type="video/mp4" />
           <track kind="subtitles" src={`/showcase/${id}.vtt`} srcLang="en" label="English" default />
         </video>
       </div>
