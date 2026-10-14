@@ -47,7 +47,7 @@ export function SignalPlots({ tab, frame }: { tab: SignalTab; frame: Reconstruct
   if (!frame) return <EmptyState title="No frames yet">Start the session to see signals.</EmptyState>;
   const csi = frame.csi;
   const brushLabel = brush ? `${brush[0].toFixed(2)}–${brush[1].toFixed(2)} s` : null;
-  const brushOpt = { toolbox: { show: true, right: 8, top: 0, itemSize: 12, iconStyle: { borderColor: "#5c6b81" }, feature: { brush: { type: ["lineX", "clear"] } } }, brush: { xAxisIndex: 0, brushStyle: { color: "rgba(45,212,230,0.12)", borderColor: "#2dd4e6" } } };
+  const brushOpt = { toolbox: { show: true, right: 8, top: 0, itemSize: 12, iconStyle: { borderColor: "#5c6b81" }, feature: { brush: { type: ["lineX", "clear"] as Array<"lineX" | "clear"> } } }, brush: { xAxisIndex: 0, brushStyle: { color: "rgba(45,212,230,0.12)", borderColor: "#2dd4e6" } } };
 
   switch (tab) {
     case "amplitude": {

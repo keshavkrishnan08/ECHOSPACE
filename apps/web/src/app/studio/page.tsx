@@ -1,3 +1,10 @@
+import { Suspense } from "react";
+import { StudioPage } from "@/components/studio/StudioPage";
+
 export default function Page() {
-  return <div className="p-6 text-sm text-muted">Coming up.</div>;
+  return (
+    <Suspense>
+      <StudioPage />
+    </Suspense>
+  );
 }

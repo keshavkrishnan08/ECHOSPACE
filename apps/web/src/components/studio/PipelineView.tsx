@@ -159,7 +159,7 @@ function StageSample({ id, frame, stats }: { id: StageId; frame: ReconstructionF
     const x = Array.from(csi.subcarrierOffsetsHz, (f) => f / 1e6);
     sample = (
       <PlotFrame title="Sample input → output (selected link, antenna 0 phase)" kind="derived" units="radians vs subcarrier offset (MHz)">
-        <EChart option={{ grid: { left: 48, right: 12, top: 24, bottom: 28 }, legend: { top: 0, textStyle: { color: "#8b9ab0", fontSize: 10 } }, tooltip: { trigger: "axis", ...tooltipStyle }, xAxis: { type: "value", min: "dataMin", max: "dataMax", ...axisStyle }, yAxis: { type: "value", scale: true, ...axisStyle }, series: [{ name: "input: raw wrapped phase", type: "line", showSymbol: false, data: x.map((f, k) => [f, csi.phaseRaw[k]]), lineStyle: { color: "#8b9ab0" } }, { name: "output: sanitized phase", type: "line", showSymbol: false, data: x.map((f, k) => [f, csi.phaseSanitized[k]]), lineStyle: { color: "#2dd4e6" } }].slice(0, K ? 2 : 0) }} height={220} />
+        <EChart option={{ grid: { left: 48, right: 12, top: 24, bottom: 28 }, legend: { top: 0, textStyle: { color: "#8b9ab0", fontSize: 10 } }, tooltip: { trigger: "axis", ...tooltipStyle }, xAxis: { type: "value", min: "dataMin", max: "dataMax", ...axisStyle }, yAxis: { type: "value", scale: true, ...axisStyle }, series: [{ name: "input: raw wrapped phase", type: "line" as const, showSymbol: false, data: x.map((f, k) => [f, csi.phaseRaw[k]]), lineStyle: { color: "#8b9ab0" } }, { name: "output: sanitized phase", type: "line" as const, showSymbol: false, data: x.map((f, k) => [f, csi.phaseSanitized[k]]), lineStyle: { color: "#2dd4e6" } }].slice(0, K ? 2 : 0) }} height={220} />
       </PlotFrame>
     );
   } else if (id === "filter" || id === "features") {
