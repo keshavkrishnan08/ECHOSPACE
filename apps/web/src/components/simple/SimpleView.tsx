@@ -1,11 +1,12 @@
 "use client";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Pause, Play, SlidersHorizontal } from "lucide-react";
 import type { ReconstructionFrame } from "@echospace/schemas";
 import { useSession } from "@/lib/store/session";
 import { useFrame } from "@/lib/engine/hooks";
+import { history } from "@/lib/engine/history";
 import { Logo } from "@/components/shell/Sidebar";
 import { cn } from "@/lib/format";
 import { CleanScene } from "./CleanScene";
@@ -35,14 +36,69 @@ function describe(frame: ReconstructionFrame | null): { headline: string; detail
   return { headline: head, detail: parts.join(" · ") || "tracking", tone: found === people && !weak ? "ok" : "warn" };
 }
 
+interface RenderState {
+  prev: ReconstructionFrame | null;
+  cur: ReconstructionFrame | null;
+  alpha: number;
+  angle: number;
+}
+
+const nextFrame = (afterSeq: number) =>
+  new Promise<ReconstructionFrame>((resolve) => {
+    const un = history.subscribe(() => {
+      const f = history.latest();
+      if (f && f.seq !== afterSeq) {
+        un();
+        resolve(f);
+      }
+    });
+  });
+
+const paint = () => new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
+
+/**
+ * `?render=1` hands the clock to a recording script: it steps the engine one frame at a time and
+ * sets the blend and camera angle for each video frame, so the output is smooth at any speed.
+ */
+function useRenderDriver(enabled: boolean) {
+  const [rv, setRv] = useState<RenderState>({ prev: null, cur: null, alpha: 1, angle: 0 });
+  useEffect(() => {
+    if (!enabled) return;
+    const api = {
+      async pick(id: string) {
+        const x = SITUATIONS.find((q) => q.id === id) ?? SITUATIONS[0];
+        useSession.getState().launch(x.build(), { scenarioKey: x.id, autoplay: false });
+        while (!useSession.getState().info) await new Promise((r) => setTimeout(r, 50));
+        setRv((v) => ({ ...v, prev: null, cur: null, alpha: 1 }));
+      },
+      async step() {
+        const wait = nextFrame(history.latest()?.seq ?? -1);
+        useSession.getState().step(1);
+        const f = await wait;
+        setRv((v) => ({ ...v, prev: v.cur, cur: f }));
+        return f.state;
+      },
+      async view(alpha: number, angle: number) {
+        setRv((v) => ({ ...v, alpha, angle }));
+        await paint();
+      },
+    };
+    (window as unknown as { __echo?: typeof api }).__echo = api;
+  }, [enabled]);
+  return enabled ? rv : null;
+}
+
 export function SimpleView() {
   const s = useSession();
-  const frame = useFrame(20);
   const params = useSearchParams();
+  const rv = useRenderDriver(params.get("render") === "1");
+  const live = useFrame(20);
+  const frame = rv ? rv.cur : live;
   const current = SITUATIONS.find((x) => x.id === s.scenarioKey) ?? SITUATIONS[0];
   const status = describe(frame);
 
   useEffect(() => {
+    if (params.get("render") === "1") return;
     const want = SITUATIONS.find((x) => x.id === params.get("s"));
     const st = useSession.getState();
     if (want && st.scenarioKey !== want.id) st.launch(want.build(), { scenarioKey: want.id });
@@ -66,7 +122,7 @@ export function SimpleView() {
       </header>
 
       <div className="min-h-0 flex-1">
-        <CleanScene frame={frame} config={s.config} />
+        <CleanScene frame={frame} config={s.config} {...(rv ? { prev: rv.prev, alpha: rv.alpha, angle: rv.angle } : {})} />
       </div>
 
       <div className="pointer-events-none absolute left-5 top-16 max-w-sm">
@@ -87,9 +143,9 @@ export function SimpleView() {
       </div>
 
       <nav aria-label="Situations" className="absolute inset-x-0 bottom-0 z-10 flex items-center gap-2 overflow-x-auto px-5 pb-5 pt-3">
-        <button type="button" onClick={s.togglePlay} aria-label={s.playing ? "Pause" : "Play"} className="mr-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line text-fg hover:bg-panel">
+        {!rv && <button type="button" onClick={s.togglePlay} aria-label={s.playing ? "Pause" : "Play"} className="mr-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line text-fg hover:bg-panel">
           {s.playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-        </button>
+        </button>}
         {SITUATIONS.map((x) => (
           <button
             key={x.id}

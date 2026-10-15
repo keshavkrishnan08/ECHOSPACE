@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import * as Tabs from "@radix-ui/react-tabs";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Dialog } from "@/components/ui/dialog";
 import { EmptyState } from "@/components/ui/states";
 import { ArchitectureDiagram } from "./Diagrams";
@@ -13,61 +13,20 @@ const VIDEOS = [
   { id: "demo-2", title: "Harder situations", blurb: "Two and three people, a weak signal, an empty room and too few sensors, including where it fails." },
 ];
 
-interface Cue {
-  start: number;
-  text: string;
-}
-
-function parseVtt(src: string): Cue[] {
-  const toS = (t: string) => {
-    const [h, m, s] = t.split(":");
-    return Number(h) * 3600 + Number(m) * 60 + Number(s);
-  };
-  const out: Cue[] = [];
-  const blocks = src.split(/\n\n+/);
-  for (const b of blocks) {
-    const lines = b.split("\n");
-    const i = lines.findIndex((l) => l.includes("-->"));
-    if (i < 0) continue;
-    out.push({ start: toS(lines[i].split("-->")[0].trim()), text: lines.slice(i + 1).join(" ") });
-  }
-  return out;
-}
-
 function VideoCard({ id, title, blurb }: { id: string; title: string; blurb: string }) {
-  const ref = useRef<HTMLVideoElement>(null);
-  const [now, setNow] = useState(0);
-  const cues = useQuery({ queryKey: ["vtt", id], queryFn: async () => { const r = await fetch(`/showcase/${id}.vtt`); return r.ok ? parseVtt(await r.text()) : []; } });
-  const active = (cues.data ?? []).filter((c) => c.start <= now).at(-1);
   return (
-    <section className="grid gap-4 rounded-md border border-line bg-surface p-4 xl:grid-cols-[1fr_340px]" data-testid={`video-${id}`}>
-      <div className="min-w-0">
-        <h2 className="text-sm font-semibold">{title}</h2>
-        <p className="mb-3 mt-0.5 max-w-3xl text-xs text-muted">{blurb}</p>
-        <video ref={ref} controls preload="metadata" className="aspect-[16/10] w-full rounded border border-line bg-bg" onTimeUpdate={(e) => setNow(e.currentTarget.currentTime)}>
-          <source src={`/showcase/${id}.mp4`} type="video/mp4" />
-          <track kind="subtitles" src={`/showcase/${id}.vtt`} srcLang="en" label="English" default />
-        </video>
-      </div>
-      <div className="min-w-0">
-        <div className="mb-2 text-2xs font-semibold uppercase tracking-[0.08em] text-muted">Subtitles · click to jump</div>
-        <ol className="max-h-[440px] space-y-1 overflow-y-auto pr-1">
-          {(cues.data ?? []).map((c, i) => (
-            <li key={i}>
-              <button type="button" onClick={() => { if (ref.current) { ref.current.currentTime = c.start + 0.05; void ref.current.play(); } }} className={`grid w-full grid-cols-[44px_1fr] gap-2 rounded px-2 py-1.5 text-left text-xs ${active === c ? "bg-signal/10 text-fg" : "text-muted hover:bg-panel"}`}>
-                <span className="num text-faint">{Math.floor(c.start / 60)}:{String(Math.floor(c.start % 60)).padStart(2, "0")}</span>
-                <span>{c.text}</span>
-              </button>
-            </li>
-          ))}
-          {cues.data && !cues.data.length && <li className="text-xs text-faint">No subtitle file found. Run scripts/showcase/record.mjs.</li>}
-        </ol>
-      </div>
+    <section className="rounded-md border border-line bg-surface p-4" data-testid={`video-${id}`}>
+      <h2 className="text-sm font-semibold">{title}</h2>
+      <p className="mb-3 mt-0.5 max-w-3xl text-xs text-muted">{blurb}</p>
+      <video controls preload="metadata" className="aspect-[16/10] w-full rounded border border-line bg-bg">
+        <source src={`/showcase/${id}.mp4`} type="video/mp4" />
+        <track kind="subtitles" src={`/showcase/${id}.vtt`} srcLang="en" label="English" default />
+      </video>
     </section>
   );
 }
 
-function Gallery() {
+function Situations() {
   const shots = useQuery({ queryKey: ["gallery"], queryFn: async () => { const r = await fetch("/showcase/gallery.json"); return r.ok ? ((await r.json()) as Array<{ file: string; title: string; caption: string; status?: string }>) : []; } });
   const [open, setOpen] = useState<number | null>(null);
   const list = shots.data ?? [];
@@ -118,7 +77,7 @@ function Purpose() {
 
 const TABS = [
   { value: "demo", label: "Demo" },
-  { value: "gallery", label: "Gallery" },
+  { value: "situations", label: "Situations" },
   { value: "purpose", label: "Purpose" },
 ];
 
@@ -137,8 +96,8 @@ export function ShowcasePage() {
         </Tabs.Root>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto p-4">
-        {tab === "demo" && <div className="space-y-4">{VIDEOS.map((v) => <VideoCard key={v.id} {...v} />)}</div>}
-        {tab === "gallery" && <Gallery />}
+        {tab === "demo" && <div className="mx-auto max-w-5xl space-y-4">{VIDEOS.map((v) => <VideoCard key={v.id} {...v} />)}</div>}
+        {tab === "situations" && <Situations />}
         {tab === "purpose" && <Purpose />}
       </div>
     </div>
