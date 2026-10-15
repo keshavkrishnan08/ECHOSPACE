@@ -45,7 +45,9 @@ async function record(name, script) {
   mkdirSync(framesDir, { recursive: true });
   const frames = [];
   const cdp = await ctx.newCDPSession(page);
+  let stopped = false;
   cdp.on("Page.screencastFrame", async (f) => {
+    if (stopped) return; // frames can still arrive after stopScreencast
     const file = join(framesDir, `${String(frames.length).padStart(6, "0")}.jpg`);
     writeFileSync(file, Buffer.from(f.data, "base64"));
     frames.push({ file, t: f.metadata.timestamp * 1000 });
@@ -68,6 +70,7 @@ async function record(name, script) {
     throw e;
   } finally {
     const total = Date.now() - t0;
+    stopped = true;
     await cdp.send("Page.stopScreencast").catch(() => {});
     await ctx.close();
     await browser.close();
