@@ -1,69 +1,41 @@
 WEBVTT
 
 1
-00:00:00.439 --> 00:00:07.439
-ECHOSPACE turns ambient radio measurements into a 3D picture of a room. Everything here runs in the browser on a synthetic simulation.
+00:00:00.369 --> 00:00:06.369
+This is a simulated room with eight Wi-Fi sensors on the walls.
 
 2
-00:00:07.443 --> 00:00:14.443
-The overview shows the live session: source, processing state, a 3D preview and metrics measured from the running engine.
+00:00:06.371 --> 00:00:13.371
+The white figure is a simulated person. ECHOSPACE never sees it, only the radio signals it disturbs.
 
 3
-00:00:21.491 --> 00:00:29.491
-Act 1. Eight transceivers line the walls. A synthetic person walks a scripted path, drawn as dashed white ground truth.
+00:00:13.687 --> 00:00:21.687
+The violet ring is where the system thinks the person is, worked out from those signals alone.
 
 4
-00:00:50.808 --> 00:00:58.808
-Cyan lines are the modelled radio paths for one link: the direct path, wall reflections, and the scatter off the body.
+00:00:21.689 --> 00:00:29.689
+The green points are the parts of the room it believes are occupied.
 
 5
-00:00:59.415 --> 00:01:05.446
-Act 2. RF Signal Studio. These plots come from the simulated channel state of the selected link, frame by frame.
+00:00:29.691 --> 00:00:39.691
+As the person walks, the detection follows. The status line shows how far off it is.
 
 6
-00:01:05.446 --> 00:01:14.446
-The Doppler spectrogram shows motion as spread energy. When the person stops or sits, it collapses back to the centre.
+00:00:44.565 --> 00:00:53.565
+Sitting still is harder. A still body disturbs the signal much less than a moving one.
 
 7
-00:01:14.480 --> 00:01:22.480
-Raw phase is scrambled by oscillator offsets. Sanitization removes a fitted linear phase so antenna differences survive.
+00:00:53.566 --> 00:01:02.566
+The system keeps the person once found, but the estimate drifts more.
 
 8
-00:01:22.514 --> 00:01:27.662
-Act 3. The pipeline has twelve stages. Each one reports its input and output shapes and its measured run time.
+00:01:06.694 --> 00:01:15.694
+Here the person walks behind a partition wall. Radio passes through it, weakened.
 
 9
-00:01:27.662 --> 00:01:35.662
-Spatial representation: a Bayesian radio tomography posterior over a voxel grid, computed in the dual form so it stays fast.
+00:01:15.695 --> 00:01:24.695
+The detection still follows, with more error near the wall.
 
 10
-00:01:35.700 --> 00:01:44.700
-Act 4. Back in the lab. Blue voxels and points are the model output. The violet sphere is a track with a two sigma ellipse.
-
-11
-00:01:44.926 --> 00:01:52.926
-Amber marks voxels that no link can see. The system reports them as unknown instead of pretending they are empty.
-
-12
-00:01:54.466 --> 00:02:00.466
-Act 5. We drop the signal to noise ratio to 3 dB and lose 40 percent of packets.
-
-13
-00:02:00.467 --> 00:02:09.467
-Input quality falls, confidence drops and position error grows. The model is not allowed to hold on to an old answer.
-
-14
-00:02:09.846 --> 00:02:16.694
-Act 6. Saving stores the seed, the launch configuration, every mid run change, model versions and measured metrics.
-
-15
-00:02:16.694 --> 00:02:25.694
-The experiment page lists provenance and metric summaries. Replay relaunches the run and checks a digest of its first forty frames.
-
-16
-00:02:26.015 --> 00:02:33.015
-The digest matches, so the run was reproduced exactly from its saved configuration.
-
-17
-00:02:33.016 --> 00:02:39.016
-That is the whole loop: simulate, measure, reconstruct, fail honestly, save, and reproduce.
+00:01:27.697 --> 00:01:34.697
+Everything here is simulated. Real hardware would need its own testing.

@@ -1,65 +1,33 @@
 WEBVTT
 
 1
-00:00:00.414 --> 00:00:07.414
-The Simulation Arena holds ten scenarios. Each one has a stated objective, editable parameters and live metrics.
+00:00:03.887 --> 00:00:11.887
+Two people crossing the room. Each one gets its own ring.
 
 2
-00:00:07.419 --> 00:00:15.419
-Scenario C puts a brick partition in the room. Links that cross it lose most of the body shadowing contrast.
+00:00:11.889 --> 00:00:21.889
+When they pass close together the system can mix them up. That is a real limit.
 
 3
-00:00:20.357 --> 00:00:29.357
-Raising the partition loss to 30 dB removes information. The view warns that the empty room calibration is now stale.
+00:00:29.473 --> 00:00:39.473
+Three people. More bodies means more overlapping signal, and the estimates get rougher.
 
 4
-00:00:30.254 --> 00:00:40.254
-Scenario D uses concrete walls and a coherent back projection model. Strong reflections create ghost energy away from the person.
+00:00:47.059 --> 00:00:57.059
+A weak, noisy signal with lost packets. Detection gets slower and less precise.
 
 5
-00:00:41.541 --> 00:00:50.541
-Scenario E has three people crossing paths. Identity switches and fragmented tracks are counted, not hidden.
+00:01:01.805 --> 00:01:11.805
+An empty room. The right answer is nothing, and noise alone should not create a person.
 
 6
-00:00:55.690 --> 00:01:04.690
-The failure lab pushes the system out of its depth. With only two nodes there is one link, so the model refuses to localise.
+00:01:14.824 --> 00:01:23.824
+Only two sensors, so a single radio link. That cannot tell where anyone is.
 
 7
-00:01:08.062 --> 00:01:17.062
-The learned ridge model was trained for one room layout. In a different room it reports unexpected geometry and does not run.
+00:01:23.824 --> 00:01:31.824
+So the system says it cannot locate anyone instead of guessing.
 
 8
-00:01:21.427 --> 00:01:29.427
-The transformer slot has no trained weights, so selecting it produces an explained failure instead of output.
-
-9
-00:01:34.163 --> 00:01:41.163
-Compare with baseline runs a second engine on the same seed. Both views share the timestamp.
-
-10
-00:01:56.971 --> 00:02:05.971
-With half the packets gone, the current run degrades while the baseline keeps its accuracy. The table shows both.
-
-11
-00:02:07.450 --> 00:02:10.665
-The research workbench runs ablations. Every variant uses the same seed and the same input, unpaced in a worker.
-
-12
-00:02:10.665 --> 00:02:20.665
-Here temporal smoothing is switched on and off. Accuracy and processing cost are reported side by side.
-
-13
-00:02:34.049 --> 00:02:43.049
-Side by side reconstruction shows ground truth, a baseline model and the current model with one shared camera.
-
-14
-00:02:48.839 --> 00:02:57.839
-Every model has a card: schemas, confidence semantics, limitations and evaluation on held out synthetic scenes.
-
-15
-00:02:57.939 --> 00:03:06.939
-Hardware readiness is kept apart from the simulation. A checklist tests a real device before anything is claimed to work.
-
-16
-00:03:06.940 --> 00:03:13.940
-Physical capture needs operator authorisation and consent, and raw recording is off unless someone turns it on.
+00:01:36.583 --> 00:01:44.583
+Back to one person with the full set of sensors. All of this is simulated.
