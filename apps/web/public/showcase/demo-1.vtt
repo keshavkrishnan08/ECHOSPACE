@@ -1,41 +1,41 @@
 WEBVTT
 
 1
-00:00:00.369 --> 00:00:06.369
+00:00:00.000 --> 00:00:06.000
 This is a simulated room with eight Wi-Fi sensors on the walls.
 
 2
-00:00:06.371 --> 00:00:13.371
+00:00:06.000 --> 00:00:13.000
 The white figure is a simulated person. ECHOSPACE never sees it, only the radio signals it disturbs.
 
 3
-00:00:13.687 --> 00:00:21.687
+00:00:13.000 --> 00:00:21.000
 The violet ring is where the system thinks the person is, worked out from those signals alone.
 
 4
-00:00:21.689 --> 00:00:29.689
+00:00:21.000 --> 00:00:28.000
 The green points are the parts of the room it believes are occupied.
 
 5
-00:00:29.691 --> 00:00:39.691
+00:00:28.000 --> 00:00:38.000
 As the person walks, the detection follows. The status line shows how far off it is.
 
 6
-00:00:44.565 --> 00:00:53.565
+00:00:40.000 --> 00:00:49.000
 Sitting still is harder. A still body disturbs the signal much less than a moving one.
 
 7
-00:00:53.566 --> 00:01:02.566
+00:00:49.000 --> 00:00:58.000
 The system keeps the person once found, but the estimate drifts more.
 
 8
-00:01:06.694 --> 00:01:15.694
+00:01:00.000 --> 00:01:09.000
 Here the person walks behind a partition wall. Radio passes through it, weakened.
 
 9
-00:01:15.695 --> 00:01:24.695
+00:01:09.000 --> 00:01:18.000
 The detection still follows, with more error near the wall.
 
 10
-00:01:27.697 --> 00:01:34.697
+00:01:20.000 --> 00:01:27.000
 Everything here is simulated. Real hardware would need its own testing.

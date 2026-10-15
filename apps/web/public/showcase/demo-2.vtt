@@ -1,33 +1,33 @@
 WEBVTT
 
 1
-00:00:03.887 --> 00:00:11.887
+00:00:00.000 --> 00:00:08.000
 Two people crossing the room. Each one gets its own ring.
 
 2
-00:00:11.889 --> 00:00:21.889
+00:00:08.000 --> 00:00:18.000
 When they pass close together the system can mix them up. That is a real limit.
 
 3
-00:00:29.473 --> 00:00:39.473
+00:00:20.000 --> 00:00:30.000
 Three people. More bodies means more overlapping signal, and the estimates get rougher.
 
 4
-00:00:47.059 --> 00:00:57.059
+00:00:32.000 --> 00:00:42.000
 A weak, noisy signal with lost packets. Detection gets slower and less precise.
 
 5
-00:01:01.805 --> 00:01:11.805
+00:00:44.000 --> 00:00:54.000
 An empty room. The right answer is nothing, and noise alone should not create a person.
 
 6
-00:01:14.824 --> 00:01:23.824
+00:00:54.000 --> 00:01:03.000
 Only two sensors, so a single radio link. That cannot tell where anyone is.
 
 7
-00:01:23.824 --> 00:01:31.824
+00:01:03.000 --> 00:01:11.000
 So the system says it cannot locate anyone instead of guessing.
 
 8
-00:01:36.583 --> 00:01:44.583
+00:01:11.000 --> 00:01:19.000
 Back to one person with the full set of sensors. All of this is simulated.
