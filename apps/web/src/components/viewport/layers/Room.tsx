@@ -10,7 +10,7 @@ import { useSession } from "@/lib/store/session";
 
 const WALLS = ["south", "east", "north", "west"] as const;
 
-export function Room({ config, layers, interactive }: { config: ScenarioConfig; layers: LayerState; interactive: boolean }) {
+export function Room({ config, layers, interactive, gridLabels = true }: { config: ScenarioConfig; layers: LayerState; interactive: boolean; gridLabels?: boolean }) {
   const { width: W, depth: D, height: H, wallThickness: T } = config.room;
   const select = useSession((s) => s.select);
   const selection = useSession((s) => s.selection);
@@ -64,10 +64,10 @@ export function Room({ config, layers, interactive }: { config: ScenarioConfig; 
           <lineSegments geometry={gridLines.major}>
             <lineBasicMaterial color="#2a3850" />
           </lineSegments>
-          {Array.from({ length: Math.floor(W) + 1 }, (_, i) => (
+          {gridLabels && Array.from({ length: Math.floor(W) + 1 }, (_, i) => (
             <TextSprite key={`gx${i}`} text={`${i} m`} position={[i, -0.25, 0.01]} color="#5c6b81" bg={null} height={0.12} />
           ))}
-          {Array.from({ length: Math.floor(D) + 1 }, (_, i) =>
+          {gridLabels && Array.from({ length: Math.floor(D) + 1 }, (_, i) =>
             i === 0 ? null : (
               <TextSprite key={`gy${i}`} text={`${i} m`} position={[-0.3, i, 0.01]} color="#5c6b81" bg={null} height={0.12} />
             ),

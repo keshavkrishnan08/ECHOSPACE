@@ -89,125 +89,65 @@ async function record(name, script) {
   }
 }
 
-const drag = async (page, x, y, dx, dy) => {
-  await page.mouse.move(x, y);
-  await page.mouse.down();
-  for (let i = 1; i <= 20; i++) await page.mouse.move(x + (dx * i) / 20, y + (dy * i) / 20);
-  await page.mouse.up();
+// Both videos only use the simple view: a simulated person moves through a room and the
+// system marks where it thinks they are. Nothing in them is measured; it is all simulation.
+const pick = async (page, id) => {
+  await page.getByTestId(`situation-${id}`).click();
+  // wait out calibration so the scene shows the model working, not the empty-room warm up
+  await page.getByTestId("simple-status").filter({ hasNotText: /Calibrating|Starting/ }).waitFor({ timeout: 60_000 });
 };
 
-// Walkthrough 1: the guided "From signal to space" demo, end to end.
+// Video 1: one person.
 await record("demo-1", async ({ page, say, wait }) => {
-  await page.goto(base + "/");
-  await say("ECHOSPACE turns ambient radio measurements into a 3D picture of a room. Everything here runs in the browser on a synthetic simulation.", 7000);
+  await page.goto(base + "/?s=walk");
+  await say("This is a simulated room with eight Wi-Fi sensors on the walls.", 6000);
+  await wait(6000);
+  await say("The white figure is a simulated person. ECHOSPACE never sees it, only the radio signals it disturbs.", 7000);
+  await page.getByTestId("simple-status").filter({ hasNotText: /Calibrating|Starting/ }).waitFor({ timeout: 60_000 });
   await wait(7000);
-  await say("The overview shows the live session: source, processing state, a 3D preview and metrics measured from the running engine.", 7000);
+  await say("The violet ring is where the system thinks the person is, worked out from those signals alone.", 8000);
+  await wait(8000);
+  await say("The green points are the parts of the room it believes are occupied.", 8000);
+  await wait(8000);
+  await say("As the person walks, the detection follows. The status line shows how far off it is.", 10000);
+  await wait(14000);
+  await pick(page, "sit");
+  await say("Sitting still is harder. A still body disturbs the signal much less than a moving one.", 9000);
+  await wait(9000);
+  await say("The system keeps the person once found, but the estimate drifts more.", 9000);
+  await wait(12000);
+  await pick(page, "wall");
+  await say("Here the person walks behind a partition wall. Radio passes through it, weakened.", 9000);
+  await wait(9000);
+  await say("The detection still follows, with more error near the wall.", 9000);
+  await wait(12000);
+  await say("Everything here is simulated. Real hardware would need its own testing.", 7000);
   await wait(7000);
-  await page.getByTestId("start-demo").click();
-  await say("Act 1. Eight transceivers line the walls. A synthetic person walks a scripted path, drawn as dashed white ground truth.", 8000);
-  await wait(4000);
-  await drag(page, 820, 520, 220, -40);
-  await wait(4500);
-  await say("Cyan lines are the modelled radio paths for one link: the direct path, wall reflections, and the scatter off the body.", 8000);
-  await wait(8000);
-  await page.getByTestId("tour-next").click();
-  await say("Act 2. RF Signal Studio. These plots come from the simulated channel state of the selected link, frame by frame.", 8000);
-  await wait(6000);
-  await page.getByTestId("signal-spectrogram").click();
-  await say("The Doppler spectrogram shows motion as spread energy. When the person stops or sits, it collapses back to the centre.", 9000);
-  await wait(9000);
-  await page.getByTestId("signal-magphase").click();
-  await say("Raw phase is scrambled by oscillator offsets. Sanitization removes a fitted linear phase so antenna differences survive.", 8000);
-  await wait(8000);
-  await page.getByTestId("tour-next").click();
-  await say("Act 3. The pipeline has twelve stages. Each one reports its input and output shapes and its measured run time.", 8000);
-  await wait(5000);
-  await page.getByTestId("stage-spatial").click();
-  await say("Spatial representation: a Bayesian radio tomography posterior over a voxel grid, computed in the dual form so it stays fast.", 8000);
-  await wait(8000);
-  await page.getByTestId("tour-next").click();
-  await say("Act 4. Back in the lab. Blue voxels and points are the model output. The violet sphere is a track with a two sigma ellipse.", 9000);
-  await wait(9000);
-  await page.getByRole("switch", { name: "Unobserved regions" }).click();
-  await say("Amber marks voxels that no link can see. The system reports them as unknown instead of pretending they are empty.", 8000);
-  await wait(8000);
-  await page.getByRole("switch", { name: "Unobserved regions" }).click();
-  await page.getByTestId("tour-next").click();
-  await say("Act 5. We drop the signal to noise ratio to 3 dB and lose 40 percent of packets.", 6000);
-  await wait(6000);
-  await say("Input quality falls, confidence drops and position error grows. The model is not allowed to hold on to an old answer.", 9000);
-  await wait(9000);
-  await page.getByTestId("tour-next").click();
-  await say("Act 6. Saving stores the seed, the launch configuration, every mid run change, model versions and measured metrics.", 7000);
-  await wait(2500);
-  await page.getByTestId("experiment-name").fill("Walkthrough: signal to space");
-  await wait(1500);
-  await page.getByTestId("confirm-save").click();
-  await page.waitForURL(/experiments/, { timeout: 60000 });
-  await say("The experiment page lists provenance and metric summaries. Replay relaunches the run and checks a digest of its first forty frames.", 9000);
-  await wait(6000);
-  await page.getByTestId("replay-experiment").click();
-  await page.getByText(/reproduced/).first().waitFor({ timeout: 90000 }).catch(() => {});
-  await say("The digest matches, so the run was reproduced exactly from its saved configuration.", 7000);
-  await wait(7000);
-  await say("That is the whole loop: simulate, measure, reconstruct, fail honestly, save, and reproduce.", 6000);
-  await wait(6000);
 });
 
-// Walkthrough 2: the simulation arena and the research workbench.
+// Video 2: harder situations, including the ones where it fails.
 await record("demo-2", async ({ page, say, wait }) => {
-  await page.goto(base + "/arena?s=C");
-  await say("The Simulation Arena holds ten scenarios. Each one has a stated objective, editable parameters and live metrics.", 7000);
-  await wait(7000);
-  await say("Scenario C puts a brick partition in the room. Links that cross it lose most of the body shadowing contrast.", 8000);
+  await page.goto(base + "/?s=two");
+  await page.getByTestId("simple-status").filter({ hasNotText: /Calibrating|Starting/ }).waitFor({ timeout: 60_000 });
+  await say("Two people crossing the room. Each one gets its own ring.", 8000);
   await wait(8000);
-  await page.getByRole("slider", { name: "Attenuation override (simplified)" }).focus();
-  for (let i = 0; i < 30; i++) await page.keyboard.press("ArrowRight");
-  await say("Raising the partition loss to 30 dB removes information. The view warns that the empty room calibration is now stale.", 9000);
-  await wait(9000);
-  await page.getByTestId("scenario-D").click();
-  await say("Scenario D uses concrete walls and a coherent back projection model. Strong reflections create ghost energy away from the person.", 10000);
-  await wait(10000);
-  await page.getByTestId("scenario-E").click();
-  await say("Scenario E has three people crossing paths. Identity switches and fragmented tracks are counted, not hidden.", 9000);
-  await wait(9000);
-  await page.getByTestId("scenario-I").click();
-  await wait(3000);
-  await page.getByTestId("variant-insufficient").click();
-  await say("The failure lab pushes the system out of its depth. With only two nodes there is one link, so the model refuses to localise.", 9000);
-  await wait(9000);
-  await page.getByTestId("variant-geometry").click();
-  await say("The learned ridge model was trained for one room layout. In a different room it reports unexpected geometry and does not run.", 9000);
-  await wait(9000);
-  await page.getByTestId("variant-transformer").click();
-  await say("The transformer slot has no trained weights, so selecting it produces an explained failure instead of output.", 8000);
-  await wait(8000);
-  await page.getByTestId("scenario-F").click();
-  await wait(3000);
-  await page.getByTestId("compare-toggle").click();
-  await say("Compare with baseline runs a second engine on the same seed. Both views share the timestamp.", 7000);
-  await wait(5000);
-  await page.getByRole("slider", { name: "Packet loss" }).focus();
-  for (let i = 0; i < 50; i++) await page.keyboard.press("ArrowRight");
-  await say("With half the packets gone, the current run degrades while the baseline keeps its accuracy. The table shows both.", 9000);
-  await wait(9000);
-  await page.goto(base + "/workbench?tab=ablations");
-  await say("The research workbench runs ablations. Every variant uses the same seed and the same input, unpaced in a worker.", 7000);
-  await wait(3000);
-  await page.getByTestId("run-ablation").click();
-  await say("Here temporal smoothing is switched on and off. Accuracy and processing cost are reported side by side.", 10000);
-  await page.getByText(/not run|running/).first().waitFor({ state: "detached", timeout: 120000 }).catch(() => {});
-  await wait(6000);
-  await page.goto(base + "/workbench?tab=sidebyside");
-  await say("Side by side reconstruction shows ground truth, a baseline model and the current model with one shared camera.", 9000);
+  await say("When they pass close together the system can mix them up. That is a real limit.", 10000);
+  await wait(14000);
+  await pick(page, "three");
+  await say("Three people. More bodies means more overlapping signal, and the estimates get rougher.", 10000);
+  await wait(14000);
+  await pick(page, "noisy");
+  await say("A weak, noisy signal with lost packets. Detection gets slower and less precise.", 10000);
+  await wait(14000);
+  await pick(page, "empty");
+  await say("An empty room. The right answer is nothing, and noise alone should not create a person.", 10000);
   await wait(12000);
-  await page.goto(base + "/models");
-  await page.getByTestId("model-ridge-floor").click();
-  await say("Every model has a card: schemas, confidence semantics, limitations and evaluation on held out synthetic scenes.", 9000);
+  await pick(page, "sparse");
+  await say("Only two sensors, so a single radio link. That cannot tell where anyone is.", 9000);
   await wait(9000);
-  await page.goto(base + "/hardware");
-  await say("Hardware readiness is kept apart from the simulation. A checklist tests a real device before anything is claimed to work.", 9000);
+  await say("So the system says it cannot locate anyone instead of guessing.", 8000);
+  await wait(10000);
+  await pick(page, "walk");
+  await say("Back to one person with the full set of sensors. All of this is simulated.", 8000);
   await wait(9000);
-  await say("Physical capture needs operator authorisation and consent, and raw recording is off unless someone turns it on.", 7000);
-  await wait(7000);
 });

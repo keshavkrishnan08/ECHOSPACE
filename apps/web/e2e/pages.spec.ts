@@ -2,7 +2,8 @@ import { expect, test } from "@playwright/test";
 import { frameNumber, trackPageErrors, waitForFrames } from "./helpers";
 
 const ROUTES: Array<[string, RegExp | string]> = [
-  ["/", "Live preview"],
+  ["/", "One person walking"],
+  ["/overview", "Live preview"],
   ["/lab", "Scene & sensors"],
   ["/arena?s=A", "Empty room baseline"],
   ["/studio", "RF Signal Studio"],
@@ -31,7 +32,7 @@ for (const [route, text] of ROUTES) {
 }
 
 test("keyboard: command palette, navigation shortcuts and focus", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/overview");
   await page.keyboard.press("Control+k");
   await expect(page.getByPlaceholder("Type a command…")).toBeFocused();
   await page.keyboard.type("Signal Studio");
@@ -80,6 +81,17 @@ test("scene reset restarts the stream from frame 0", async ({ page }) => {
 
 test("narrow viewport keeps the shell usable", async ({ page }) => {
   await page.setViewportSize({ width: 900, height: 900 });
-  await page.goto("/");
+  await page.goto("/overview");
   await expect(page.getByTestId("launch-lab")).toBeVisible();
+});
+
+test("simple view switches situations and reports detections", async ({ page }) => {
+  const errors = trackPageErrors(page);
+  await page.goto("/");
+  await expect(page.getByTestId("simple-view")).toBeVisible();
+  await page.getByTestId("situation-empty").click();
+  await expect(page.getByTestId("simple-status")).toHaveText(/Nobody here|Calibrating|Starting/, { timeout: 30_000 });
+  await page.getByTestId("situation-sparse").click();
+  await expect(page.getByTestId("simple-status")).toHaveText("Can't locate anyone", { timeout: 30_000 });
+  expect(errors).toEqual([]);
 });

@@ -92,10 +92,12 @@ export function UnobservedOverlay({ frame, config }: { frame: ReconstructionFram
   );
 }
 
-export function PointCloud({ frame, which, colorBy, size, density, confidenceFilter, clip, interactive, region, maxHeight }: {
+export function PointCloud({ frame, which, colorBy, size, density, confidenceFilter, clip, interactive, region, maxHeight, tint }: {
   frame: ReconstructionFrame;
   which: "raw" | "filtered";
   colorBy: ColorBy;
+  /** Single colour for every point; overrides colorBy. */
+  tint?: string;
   size: number;
   density: number;
   confidenceFilter: number;
@@ -140,7 +142,8 @@ export function PointCloud({ frame, which, colorBy, size, density, confidenceFil
       P[n * 3] = x;
       P[n * 3 + 1] = y;
       P[n * 3 + 2] = z;
-      if (which === "raw") tmpC.set("#7a8ba3");
+      if (tint) tmpC.set(tint);
+      else if (which === "raw") tmpC.set("#7a8ba3");
       else if (colorBy === "height") colormap.height(z / maxHeight, tmpC);
       else if (colorBy === "confidence") colormap.confidence(conf, tmpC);
       else {
@@ -158,7 +161,7 @@ export function PointCloud({ frame, which, colorBy, size, density, confidenceFil
     pos.needsUpdate = true;
     col.needsUpdate = true;
     geo.computeBoundingSphere();
-  }, [frame, which, colorBy, density, confidenceFilter, geo, region, maxHeight]);
+  }, [frame, which, colorBy, density, confidenceFilter, geo, region, maxHeight, tint]);
   return (
     <points
       ref={ref}

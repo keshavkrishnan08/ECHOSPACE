@@ -12,7 +12,7 @@ test("signal-to-space acceptance flow", async ({ page }) => {
   const errors = trackPageErrors(page);
 
   // 1–2. Launch the application; a synthetic session starts automatically.
-  await page.goto("/");
+  await page.goto("/overview");
   await expect(page.getByTestId("source-badge").first()).toContainText(/synthetic simulation/i);
   await page.getByTestId("launch-lab").click();
   await expect(page).toHaveURL(/\/lab/);

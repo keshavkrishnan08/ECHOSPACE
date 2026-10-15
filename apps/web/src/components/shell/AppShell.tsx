@@ -1,6 +1,7 @@
 "use client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useSession } from "@/lib/store/session";
 import { useSettings } from "@/lib/store/settings";
@@ -20,6 +21,18 @@ function Inner({ children }: { children: React.ReactNode }) {
     void useSettings.persist.rehydrate();
     ensureBooted();
   }, [ensureBooted]);
+  const path = usePathname();
+  if (path === "/") {
+    return (
+      <>
+        <main id="main" className="h-dvh w-full overflow-hidden">
+          <ErrorBoundary label="Page">{children}</ErrorBoundary>
+        </main>
+        <CommandPalette />
+        <Toasts />
+      </>
+    );
+  }
   return (
     <div className="flex h-dvh w-full overflow-hidden">
       <Sidebar />

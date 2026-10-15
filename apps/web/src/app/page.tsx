@@ -1,5 +1,10 @@
-import { OverviewPage } from "@/components/overview/OverviewPage";
+import { Suspense } from "react";
+import { SimpleView } from "@/components/simple/SimpleView";
 
 export default function Page() {
-  return <OverviewPage />;
+  return (
+    <Suspense>
+      <SimpleView />
+    </Suspense>
+  );
 }

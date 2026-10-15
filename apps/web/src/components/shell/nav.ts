@@ -1,7 +1,7 @@
-import { Activity, Boxes, Cpu, Database, FlaskConical, Gauge, LayoutDashboard, Radio, Settings, Orbit, BookOpen, Microscope, Clapperboard } from "lucide-react";
+import { Activity, Boxes, Cpu, Database, FlaskConical, Gauge, LayoutDashboard, Radio, Settings, Orbit, BookOpen, Microscope, Clapperboard, Eye } from "lucide-react";
 
 export const NAV = [
-  { href: "/", label: "Overview", icon: LayoutDashboard, primary: false, key: "1" },
+  { href: "/overview", label: "Overview", icon: LayoutDashboard, primary: false, key: "1" },
   { href: "/lab", label: "Live Spatial Lab", icon: Orbit, primary: true, key: "2" },
   { href: "/arena", label: "Simulation Arena", icon: FlaskConical, primary: true, key: "3" },
   { href: "/studio", label: "RF Signal Studio", icon: Radio, primary: true, key: "4" },
@@ -17,4 +17,5 @@ export const SECONDARY = [
   { href: "/hardware", label: "Hardware readiness", icon: Cpu },
   { href: "/docs", label: "Documentation", icon: BookOpen },
   { href: "/showcase", label: "Showcase", icon: Clapperboard },
+  { href: "/", label: "Simple view", icon: Eye },
 ] as const;
