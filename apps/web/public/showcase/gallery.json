@@ -21,19 +21,19 @@
     "file": "gallery/two.png",
     "title": "Two people crossing",
     "caption": "Each person gets a ring. When they pass close together the two can be swapped.",
-    "status": "2 people · 3 detected"
+    "status": "2 people · 2 detected"
   },
   {
     "file": "gallery/three.png",
     "title": "Three people",
     "caption": "More bodies means overlapping signal. Detections get rougher and one person can be missed for a while.",
-    "status": "3 people · 1 detected"
+    "status": "3 people · 2 detected"
   },
   {
     "file": "gallery/noisy.png",
     "title": "Weak signal",
     "caption": "Low signal and lost packets slow detection down. The status line flags the weak input.",
-    "status": "1 person · 0 detected"
+    "status": "1 person · 1 detected"
   },
   {
     "file": "gallery/empty.png",

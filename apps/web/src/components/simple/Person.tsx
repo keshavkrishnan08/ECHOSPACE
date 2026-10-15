@@ -69,7 +69,7 @@ export function SimulatedPerson({ subject }: { subject: GroundTruthSubject }) {
 
 /** What ECHOSPACE detected: a ring on the floor sized by 2σ uncertainty and a soft beam. */
 export function DetectionMarker({ track }: { track: Track }) {
-  const r = Math.max(0.25, 2 * Math.sqrt(Math.max(track.covariance[0], track.covariance[2])));
+  const r = Math.min(0.8, Math.max(0.25, 2 * Math.sqrt(Math.max(track.covariance[0], track.covariance[2]))));
   const [x, y] = track.position;
   return (
     <group position={[x, y, 0]}>

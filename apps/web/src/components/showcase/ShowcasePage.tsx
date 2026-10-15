@@ -5,12 +5,12 @@ import * as Tabs from "@radix-ui/react-tabs";
 import { useRef, useState } from "react";
 import { Dialog } from "@/components/ui/dialog";
 import { EmptyState } from "@/components/ui/states";
-import { ArchitectureDiagram, PipelineDiagram, ReproDiagram } from "./Diagrams";
-import { CODE, PURPOSE } from "./content";
+import { ArchitectureDiagram } from "./Diagrams";
+import { PURPOSE } from "./content";
 
 const VIDEOS = [
-  { id: "demo-1", title: "From signal to space", blurb: "The guided demo end to end: the room, the measurements, the pipeline, the reconstruction, a deliberate failure and a verified replay." },
-  { id: "demo-2", title: "Arena and workbench", blurb: "Occlusion, multipath, crossing people, the failure lab, baseline comparison, ablations, model cards and hardware readiness." },
+  { id: "demo-1", title: "One person", blurb: "A simulated person walks, sits and moves behind a wall while the system follows them from Wi-Fi signals alone." },
+  { id: "demo-2", title: "Harder situations", blurb: "Two and three people, a weak signal, an empty room and too few sensors, including where it fails." },
 ];
 
 interface Cue {
@@ -68,58 +68,29 @@ function VideoCard({ id, title, blurb }: { id: string; title: string; blurb: str
 }
 
 function Gallery() {
-  const shots = useQuery({ queryKey: ["gallery"], queryFn: async () => { const r = await fetch("/showcase/gallery.json"); return r.ok ? ((await r.json()) as Array<{ file: string; title: string; caption: string; group: string }>) : []; } });
+  const shots = useQuery({ queryKey: ["gallery"], queryFn: async () => { const r = await fetch("/showcase/gallery.json"); return r.ok ? ((await r.json()) as Array<{ file: string; title: string; caption: string; status?: string }>) : []; } });
   const [open, setOpen] = useState<number | null>(null);
   const list = shots.data ?? [];
-  const groups = [...new Set(list.map((s) => s.group))];
   return (
-    <div className="space-y-6">
+    <div>
       {!list.length && <EmptyState title="No screenshots yet">Run scripts/showcase/capture.mjs against a running app.</EmptyState>}
-      {groups.map((g) => (
-        <section key={g}>
-          <h2 className="mb-2 text-2xs font-semibold uppercase tracking-[0.1em] text-muted">{g}</h2>
-          <div className="grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
-            {list.map((s, i) => s.group !== g ? null : (
-              <figure key={s.file} className="overflow-hidden rounded-md border border-line bg-surface">
-                <button type="button" onClick={() => setOpen(i)} className="block w-full" aria-label={`Enlarge ${s.title}`}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={`/showcase/${s.file}`} alt={s.title} className="aspect-[5/3] w-full object-cover object-top" loading="lazy" />
-                </button>
-                <figcaption className="p-3">
-                  <div className="text-xs font-semibold">{s.title}</div>
-                  <p className="mt-0.5 text-xs text-muted">{s.caption}</p>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </section>
-      ))}
-      <section>
-        <h2 className="mb-2 text-2xs font-semibold uppercase tracking-[0.1em] text-muted">Technical design</h2>
-        <div className="space-y-3">
-          {[{ t: "System architecture", d: <ArchitectureDiagram /> }, { t: "Processing pipeline", d: <PipelineDiagram /> }, { t: "How a run is reproduced", d: <ReproDiagram /> }].map((x) => (
-            <figure key={x.t} className="rounded-md border border-line bg-surface p-4">
-              <figcaption className="mb-2 text-xs font-semibold">{x.t}</figcaption>
-              <div className="overflow-x-auto">{x.d}</div>
-            </figure>
-          ))}
-        </div>
-      </section>
-      <section>
-        <h2 className="mb-2 text-2xs font-semibold uppercase tracking-[0.1em] text-muted">Code components</h2>
-        <div className="grid gap-3 xl:grid-cols-2">
-          {CODE.map((c) => (
-            <figure key={c.title} className="min-w-0 rounded-md border border-line bg-surface p-4">
-              <figcaption>
-                <div className="text-xs font-semibold">{c.title}</div>
-                <div className="num text-2xs text-signal">{c.file}</div>
-                <p className="mt-1 text-xs text-muted">{c.note}</p>
-              </figcaption>
-              <pre className="num mt-3 overflow-x-auto rounded border border-line-soft bg-bg p-3 text-[11.5px] leading-relaxed text-fg">{c.code}</pre>
-            </figure>
-          ))}
-        </div>
-      </section>
+      <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
+        {list.map((s, i) => (
+          <figure key={s.file} className="overflow-hidden rounded-md border border-line bg-surface">
+            <button type="button" onClick={() => setOpen(i)} className="block w-full" aria-label={`Enlarge ${s.title}`}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={`/showcase/${s.file}`} alt={s.title} className="aspect-[5/3] w-full object-cover" loading="lazy" />
+            </button>
+            <figcaption className="p-3">
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="text-xs font-semibold">{s.title}</span>
+                {s.status && <span className="text-2xs text-faint">{s.status}</span>}
+              </div>
+              <p className="mt-0.5 text-xs text-muted">{s.caption}</p>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
       <Dialog open={open !== null} onOpenChange={(o) => !o && setOpen(null)} title={open !== null ? list[open]?.title ?? "" : ""} description={open !== null ? list[open]?.caption : undefined} wide>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         {open !== null && <img src={`/showcase/${list[open].file}`} alt={list[open].title} className="w-full rounded border border-line" />}
@@ -132,10 +103,13 @@ function Purpose() {
   return (
     <article className="mx-auto max-w-2xl py-4" data-testid="purpose">
       <p className="text-lg leading-relaxed text-fg">{PURPOSE.lead}</p>
-      {PURPOSE.sections.map((s) => (
-        <section key={s.title} className="mt-8">
-          <h2 className="text-sm font-semibold text-signal">{s.title}</h2>
-          {s.body.map((p, i) => <p key={i} className="mt-2 text-sm leading-relaxed text-muted">{p}</p>)}
+      {PURPOSE.body.map((p, i) => <p key={i} className="mt-3 text-sm leading-relaxed text-muted">{p}</p>)}
+      <h2 className="mt-12 text-2xs font-semibold uppercase tracking-[0.12em] text-faint">How it was built</h2>
+      <div className="mt-4 overflow-x-auto rounded-md border border-line bg-surface p-4"><ArchitectureDiagram /></div>
+      {PURPOSE.technical.map((s) => (
+        <section key={s.title} className="mt-6">
+          <h3 className="text-sm font-semibold text-signal">{s.title}</h3>
+          <p className="mt-1.5 text-sm leading-relaxed text-muted">{s.body}</p>
         </section>
       ))}
     </article>

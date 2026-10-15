@@ -33,6 +33,9 @@ const shots = [];
 for (const [id, settle, title, caption] of SHOTS) {
   await page.goto(`${base}/?s=${id}`);
   await page.waitForTimeout(settle);
+  // pause first so the still and its status line come from the same frame
+  await page.getByRole("button", { name: "Pause" }).click();
+  await page.waitForTimeout(600);
   const status = (await page.getByTestId("simple-status").textContent())?.trim() ?? "";
   await page.screenshot({ path: join(out, `${id}.png`) });
   shots.push({ file: `gallery/${id}.png`, title, caption, status });
