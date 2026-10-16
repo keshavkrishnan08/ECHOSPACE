@@ -5,7 +5,6 @@ import * as Tabs from "@radix-ui/react-tabs";
 import { useState } from "react";
 import { Dialog } from "@/components/ui/dialog";
 import { EmptyState } from "@/components/ui/states";
-import { STACK } from "./content";
 
 const VIDEOS = [
   { id: "demo-1", title: "One person", blurb: "A simulated person walks and sits and moves behind a wall and climbs stairs. The system follows them from Wi-Fi signals alone." },
@@ -32,7 +31,7 @@ function Situations() {
   return (
     <div>
       {!list.length && <EmptyState title="No screenshots yet">Run scripts/showcase/capture.mjs against a running app.</EmptyState>}
-      <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {list.map((s, i) => (
           <figure key={s.file} className="overflow-hidden rounded-md border border-line bg-surface">
             <button type="button" onClick={() => setOpen(i)} className="block w-full" aria-label={`Enlarge ${s.title}`}>
@@ -57,25 +56,9 @@ function Situations() {
   );
 }
 
-function Stack() {
-  return (
-    <div className="mx-auto grid max-w-4xl gap-x-12 gap-y-8 py-4 sm:grid-cols-2" data-testid="stack">
-      {STACK.map((g) => (
-        <section key={g.group}>
-          <h2 className="text-2xs font-semibold uppercase tracking-[0.12em] text-signal">{g.group}</h2>
-          <ul className="mt-2 space-y-1.5">
-            {g.items.map((x) => <li key={x} className="text-sm text-muted">{x}</li>)}
-          </ul>
-        </section>
-      ))}
-    </div>
-  );
-}
-
 const TABS = [
   { value: "demo", label: "Demo" },
   { value: "situations", label: "Situations" },
-  { value: "stack", label: "Stack" },
 ];
 
 export function ShowcasePage() {
@@ -93,9 +76,8 @@ export function ShowcasePage() {
         </Tabs.Root>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto p-4">
-        {tab === "demo" && <div className="mx-auto max-w-5xl space-y-4">{VIDEOS.map((v) => <VideoCard key={v.id} {...v} />)}</div>}
+        {tab === "demo" && <div className="grid gap-4 xl:grid-cols-2">{VIDEOS.map((v) => <VideoCard key={v.id} {...v} />)}</div>}
         {tab === "situations" && <Situations />}
-        {tab === "stack" && <Stack />}
       </div>
     </div>
   );

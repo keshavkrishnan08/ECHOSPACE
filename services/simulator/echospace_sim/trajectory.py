@@ -130,7 +130,8 @@ def compile_path(spec: SubjectSpec) -> CompiledPath:
             t += a.duration_s
         elif isinstance(a, TurnAction):
             h1 = (a.heading_deg * math.pi) / 180
-            segments.append(Segment("turn", t, t + a.duration_s, pos, heading, h1=heading + _wrap_angle(h1 - heading), z0=elev, z1=elev))
+            h_end = heading + _wrap_angle(h1 - heading)
+            segments.append(Segment("turn", t, t + a.duration_s, pos, heading, h1=h_end, z0=elev, z1=elev))
             t += a.duration_s
             heading = h1
         elif isinstance(a, SitAction):

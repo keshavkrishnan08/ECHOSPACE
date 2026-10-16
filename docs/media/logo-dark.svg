@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="72" viewBox="0 0 360 72" role="img" aria-label="ECHO">
+  <g fill="none" stroke-linecap="round" stroke-width="2.4">
+    <circle cx="36" cy="36" r="4.5" fill="#2dd4e6" stroke="none"/>
+    <path d="M24 24a17 17 0 0 0 0 24M48 24a17 17 0 0 1 0 24" stroke="#2dd4e6"/>
+    <path d="M15 15a29.5 29.5 0 0 0 0 42M57 15a29.5 29.5 0 0 1 0 42" stroke="#2dd4e6" opacity="0.55"/>
+    <path d="M6 6a42 42 0 0 0 0 60M66 6a42 42 0 0 1 0 60" stroke="#4b5563" opacity="0.6"/>
+  </g>
+  <text x="94" y="47" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="34" font-weight="500" letter-spacing="14" fill="#e6edf3">ECH<tspan fill="#2dd4e6">O</tspan></text>
+</svg>

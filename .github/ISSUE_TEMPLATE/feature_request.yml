@@ -1,0 +1,15 @@
+name: Feature or research idea
+description: A new situation, model, adapter or analysis
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Idea
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: How would we know it works
+      description: The metric, scene or comparison that would show an improvement.

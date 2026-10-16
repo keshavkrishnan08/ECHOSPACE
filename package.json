@@ -1,8 +1,9 @@
 {
   "name": "echospace",
   "private": true,
+  "license": "MIT",
   "version": "0.1.0",
-  "description": "Ambient RF-to-3D spatial imaging research platform",
+  "description": "ECHO: finding people with Wi-Fi signals. Simulation, signal processing, 3D reconstruction and tracking in the browser.",
   "packageManager": "pnpm@10.12.1",
   "engines": {
     "node": ">=20"

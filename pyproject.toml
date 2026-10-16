@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "ECHOSPACE Python reference implementation: synthetic CSI simulator and inference pipeline"
 readme = "README.md"
 requires-python = ">=3.12"
+license = { text = "MIT" }
 dependencies = [
     "numpy>=1.26",
     "scipy>=1.11",
