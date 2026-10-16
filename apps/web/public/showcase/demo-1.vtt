@@ -6,11 +6,11 @@ This is a simulated room with eight Wi-Fi sensors on the walls.
 
 2
 00:00:06.000 --> 00:00:13.000
-The white figure is a simulated person. ECHOSPACE never sees it, only the radio signals it disturbs.
+The white figure is a simulated person. ECHO never sees it. It only sees the radio signals it disturbs.
 
 3
 00:00:13.000 --> 00:00:21.000
-The violet ring is where the system thinks the person is, worked out from those signals alone.
+The violet ring is where the system thinks the person is. It works this out from those signals alone.
 
 4
 00:00:21.000 --> 00:00:28.000
@@ -18,7 +18,7 @@ The green points are the parts of the room it believes are occupied.
 
 5
 00:00:28.000 --> 00:00:38.000
-As the person walks, the detection follows. The status line shows how far off it is.
+As the person walks the detection follows. The status line shows how far off it is.
 
 6
 00:00:40.000 --> 00:00:49.000
@@ -26,16 +26,28 @@ Sitting still is harder. A still body disturbs the signal much less than a movin
 
 7
 00:00:49.000 --> 00:00:58.000
-The system keeps the person once found, but the estimate drifts more.
+The system keeps the person once found. The estimate drifts more though.
 
 8
 00:01:00.000 --> 00:01:09.000
-Here the person walks behind a partition wall. Radio passes through it, weakened.
+Here the person walks behind a partition wall. Radio still passes through it but weaker.
 
 9
 00:01:09.000 --> 00:01:18.000
-The detection still follows, with more error near the wall.
+The detection still follows with more error near the wall.
 
 10
-00:01:20.000 --> 00:01:27.000
+00:01:20.000 --> 00:01:28.000
+Now a building with two floors joined by a staircase. Each floor has its own ring of sensors.
+
+11
+00:01:28.000 --> 00:01:37.000
+As the person climbs the ring rises with them. The system estimates height as well as position.
+
+12
+00:01:37.000 --> 00:01:46.000
+The status line says which floor the person is on and which floor the system detected.
+
+13
+00:01:49.000 --> 00:01:56.000
 Everything here is simulated. Real hardware would need its own testing.

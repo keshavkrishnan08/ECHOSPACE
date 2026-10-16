@@ -20,14 +20,14 @@
   {
     "file": "gallery/two.png",
     "title": "Two people crossing",
-    "caption": "Each person gets a ring. Crossing paths can swap them or leave a duplicate ring behind.",
-    "status": "2 people · 4 detected"
+    "caption": "Each person gets a ring when they are apart. Close together they can merge into one ring or swap.",
+    "status": "2 people · 1 detected"
   },
   {
     "file": "gallery/three.png",
     "title": "Three people",
     "caption": "More bodies means overlapping signal. People can be missed for a while. One person can also show up as two rings.",
-    "status": "3 people · 5 detected"
+    "status": "3 people · 2 detected"
   },
   {
     "file": "gallery/noisy.png",
@@ -40,6 +40,12 @@
     "title": "Empty room",
     "caption": "Nobody is there and nothing is drawn. Noise alone does not create a person.",
     "status": "Nobody here"
+  },
+  {
+    "file": "gallery/stairs.png",
+    "title": "Climbing stairs",
+    "caption": "Two floors joined by a staircase. The ring follows the person up and the status line names the floor they were detected on.",
+    "status": "1 person · 1 detected"
   },
   {
     "file": "gallery/sparse.png",
