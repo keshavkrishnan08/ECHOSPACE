@@ -2,31 +2,31 @@
   {
     "file": "gallery/walk.png",
     "title": "One person walking",
-    "caption": "The ring follows the walker closely. Movement disturbs many radio links at once, which is the easiest case.",
+    "caption": "The ring follows the walker closely. Movement disturbs many radio links at once. This is the easiest case.",
     "status": "1 person · 1 detected"
   },
   {
     "file": "gallery/sit.png",
     "title": "Sitting still",
-    "caption": "Once the person stops, the signal change is small. The track holds but the estimate wanders more.",
+    "caption": "Once the person stops the signal change is small. The track holds but the estimate wanders more.",
     "status": "1 person · 1 detected"
   },
   {
     "file": "gallery/wall.png",
     "title": "Behind a wall",
-    "caption": "Radio goes through the partition, weakened. The person is still found, with more error near the wall.",
+    "caption": "Radio goes through the partition but weaker. The person is still found with more error near the wall.",
     "status": "1 person · 1 detected"
   },
   {
     "file": "gallery/two.png",
     "title": "Two people crossing",
-    "caption": "Each person gets a ring, but crossing paths can swap them or leave a duplicate ring behind.",
+    "caption": "Each person gets a ring. Crossing paths can swap them or leave a duplicate ring behind.",
     "status": "2 people · 4 detected"
   },
   {
     "file": "gallery/three.png",
     "title": "Three people",
-    "caption": "More bodies means overlapping signal. People can be missed for a while, or one person can show up as two rings.",
+    "caption": "More bodies means overlapping signal. People can be missed for a while. One person can also show up as two rings.",
     "status": "3 people · 5 detected"
   },
   {
@@ -44,7 +44,7 @@
   {
     "file": "gallery/sparse.png",
     "title": "Too few sensors",
-    "caption": "With a single radio link the position cannot be worked out, so the system says so instead of guessing.",
+    "caption": "With a single radio link the position cannot be worked out. The system says so instead of guessing.",
     "status": "Can't locate anyone"
   }
 ]
