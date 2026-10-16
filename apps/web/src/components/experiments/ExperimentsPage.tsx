@@ -25,7 +25,7 @@ export function reportMarkdown(r: ExperimentRecord): string {
   return [
     `# Experiment report — ${r.name}`,
     "",
-    r.sourceMode === "synthetic" ? "> SIMULATION: all metrics are computed against synthetic ground truth from the ECHOSPACE simulator. They are not physical measurements." : `> Source: ${r.sourceMode}. Simulation metrics are unavailable without ground truth.`,
+    r.sourceMode === "synthetic" ? "> SIMULATION: all metrics are computed against synthetic ground truth from the ECHO simulator. They are not physical measurements." : `> Source: ${r.sourceMode}. Simulation metrics are unavailable without ground truth.`,
     "",
     "| field | value |",
     "|---|---|",

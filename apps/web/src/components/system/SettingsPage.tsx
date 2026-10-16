@@ -37,7 +37,7 @@ export function SettingsPage() {
         <Panel title="Privacy & retention">
           <div className="space-y-2.5 text-xs">
             <Toggle label="Allow raw hardware recordings (opt-in)" checked={st.recordingsOptIn} onChange={(v) => st.set("recordingsOptIn", v)} />
-            <p className="text-2xs text-muted">ECHOSPACE never performs identity recognition. Track identifiers are random per session. Raw signals are not logged; frames live in memory for the configured timeline window only.</p>
+            <p className="text-2xs text-muted">ECHO never performs identity recognition. Track identifiers are random per session. Raw signals are not logged; frames live in memory for the configured timeline window only.</p>
             <Button variant="danger" onClick={async () => { const all = await localExperiments.list(); await Promise.all(all.map((e) => localExperiments.remove(e.id))); await qc.invalidateQueries({ queryKey: ["experiments"] }); toast(`Deleted ${all.length} local experiments`, "ok"); }}>Delete all experiments stored in this browser</Button>
           </div>
         </Panel>

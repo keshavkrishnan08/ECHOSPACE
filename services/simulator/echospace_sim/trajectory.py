@@ -46,6 +46,10 @@ class Segment:
     """Distance walked before this segment (walk only)."""
     h1: float = 0.0
     """Final heading (turn only); `heading` is the initial heading."""
+    z0: float = 0.0
+    """Floor height under the subject at the start of the segment."""
+    z1: float = 0.0
+    """Floor height at the end of a walk (stairs); equals z0 otherwise."""
 
 
 @dataclass(frozen=True)
@@ -81,17 +85,27 @@ def _simulate_end(spec: SubjectSpec) -> Vec2:
     return p
 
 
+def _end_elevation(spec: SubjectSpec) -> float:
+    z = 0.0
+    for a in spec.actions:
+        if isinstance(a, WalkAction) and a.to_z is not None:
+            z = a.to_z
+    return z
+
+
 def compile_path(spec: SubjectSpec) -> CompiledPath:
     segments: list[Segment] = []
     t = 0.0
     pos: Vec2 = (spec.start[0], spec.start[1])
     heading = (spec.start_heading_deg * math.pi) / 180
     walked = 0.0
+    elev = 0.0
     actions = list(spec.actions)
     if spec.loop:
         end = _simulate_end(spec)
         if js_hypot(end[0] - spec.start[0], end[1] - spec.start[1]) > 1e-6:
-            actions.append(WalkAction(type="walk", to=(spec.start[0], spec.start[1]), speed=1.0))
+            back_z = 0.0 if _end_elevation(spec) != 0 else None
+            actions.append(WalkAction(type="walk", to=(spec.start[0], spec.start[1]), speed=1.0, to_z=back_z))
     for a in actions:
         if isinstance(a, WalkAction):
             dx = a.to[0] - pos[0]
@@ -102,7 +116,9 @@ def compile_path(spec: SubjectSpec) -> CompiledPath:
             h = math.atan2(dy, dx)
             dur = length / a.speed
             to = (a.to[0], a.to[1])
-            segments.append(Segment("walk", t, t + dur, pos, h, to=to, speed=a.speed, d0=walked))
+            z1 = a.to_z if a.to_z is not None else elev
+            segments.append(Segment("walk", t, t + dur, pos, h, to=to, speed=a.speed, d0=walked, z0=elev, z1=z1))
+            elev = z1
             walked += length
             t += dur
             pos = to
@@ -110,17 +126,17 @@ def compile_path(spec: SubjectSpec) -> CompiledPath:
         elif isinstance(a, StopAction):
             if a.duration_s <= 0:
                 continue
-            segments.append(Segment("stop", t, t + a.duration_s, pos, heading))
+            segments.append(Segment("stop", t, t + a.duration_s, pos, heading, z0=elev, z1=elev))
             t += a.duration_s
         elif isinstance(a, TurnAction):
             h1 = (a.heading_deg * math.pi) / 180
-            segments.append(Segment("turn", t, t + a.duration_s, pos, heading, h1=heading + _wrap_angle(h1 - heading)))
+            segments.append(Segment("turn", t, t + a.duration_s, pos, heading, h1=heading + _wrap_angle(h1 - heading), z0=elev, z1=elev))
             t += a.duration_s
             heading = h1
         elif isinstance(a, SitAction):
             if a.duration_s <= 0:
                 continue
-            segments.append(Segment("sit", t, t + a.duration_s, pos, heading))
+            segments.append(Segment("sit", t, t + a.duration_s, pos, heading, z0=elev, z1=elev))
             t += a.duration_s
     if not segments:
         segments.append(Segment("stop", 0.0, 1.0, pos, heading))
@@ -147,10 +163,14 @@ def subject_state_at(path: CompiledPath, time: float) -> SubjectState:
     gait_phase = 0.0
     x, y = seg.at
     heading = seg.heading
+    elev = seg.z0
+    vz = 0.0
     if seg.kind == "walk":
         f = min(1.0, max(0.0, (tt - seg.t0) / (seg.t1 - seg.t0)))
         x = seg.at[0] + (seg.to[0] - seg.at[0]) * f
         y = seg.at[1] + (seg.to[1] - seg.at[1]) * f
+        elev = seg.z0 + (seg.z1 - seg.z0) * f
+        vz = (seg.z1 - seg.z0) / (seg.t1 - seg.t0)
         vx = math.cos(heading) * seg.speed
         vy = math.sin(heading) * seg.speed
         posture = "walking"
@@ -169,6 +189,9 @@ def subject_state_at(path: CompiledPath, time: float) -> SubjectState:
         posture = "sitting" if sit_blend > 0.5 else "standing"
 
     joints = skeleton(x, y, heading, spec.height_m, gait_phase, posture == "walking", sit_blend)
+    if elev != 0:
+        # float64 add then float32 store, as the TypeScript Float32Array does
+        joints[2::3] = (joints[2::3].astype(np.float64) + elev).astype(np.float32)
     jl: list[float] = joints.astype(np.float64).tolist()
 
     def joint(i: int) -> tuple[float, float, float]:
@@ -191,14 +214,14 @@ def subject_state_at(path: CompiledPath, time: float) -> SubjectState:
     return SubjectState(
         present=True,
         position=(x, y, centre_z),
-        velocity=(vx, vy, 0.0),
+        velocity=(vx, vy, vz),
         heading=heading,
         posture=posture,
         sit_blend=sit_blend,
         gait_phase=gait_phase,
         joints=joints,
         scatterers=scatterers,
-        axis_bottom=0.05,
+        axis_bottom=elev + 0.05,
         axis_top=jl[2] + 0.08,
     )
 

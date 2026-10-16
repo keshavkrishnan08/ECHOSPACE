@@ -7,10 +7,10 @@ import type { SubjectSpec, Vec2, Vec3 } from "@echospace/schemas";
  */
 
 type Segment =
-  | { kind: "walk"; t0: number; t1: number; from: Vec2; to: Vec2; heading: number; speed: number; d0: number }
-  | { kind: "stop"; t0: number; t1: number; at: Vec2; heading: number }
-  | { kind: "turn"; t0: number; t1: number; at: Vec2; h0: number; h1: number }
-  | { kind: "sit"; t0: number; t1: number; at: Vec2; heading: number };
+  | { kind: "walk"; t0: number; t1: number; from: Vec2; to: Vec2; heading: number; speed: number; d0: number; z0: number; z1: number }
+  | { kind: "stop"; t0: number; t1: number; at: Vec2; heading: number; z0: number }
+  | { kind: "turn"; t0: number; t1: number; at: Vec2; h0: number; h1: number; z0: number }
+  | { kind: "sit"; t0: number; t1: number; at: Vec2; heading: number; z0: number };
 
 export interface CompiledPath {
   spec: SubjectSpec;
@@ -48,11 +48,12 @@ export function compilePath(spec: SubjectSpec): CompiledPath {
   let pos: Vec2 = [spec.start[0], spec.start[1]];
   let heading = (spec.startHeadingDeg * Math.PI) / 180;
   let walked = 0;
+  let elev = 0; // floor height under the subject; changes only on walks with `toZ` (stairs)
   const actions = [...spec.actions];
   if (spec.loop) {
     const end = simulateEnd(spec);
     if (Math.hypot(end[0] - spec.start[0], end[1] - spec.start[1]) > 1e-6) {
-      actions.push({ type: "walk", to: [spec.start[0], spec.start[1]], speed: 1.0 });
+      actions.push({ type: "walk", to: [spec.start[0], spec.start[1]], speed: 1.0, ...(endElevation(spec) !== 0 ? { toZ: 0 } : {}) });
     }
   }
   for (const a of actions) {
@@ -63,31 +64,39 @@ export function compilePath(spec: SubjectSpec): CompiledPath {
       if (len < 1e-6) continue;
       const h = Math.atan2(dy, dx);
       const dur = len / a.speed;
-      segments.push({ kind: "walk", t0: t, t1: t + dur, from: pos, to: [a.to[0], a.to[1]], heading: h, speed: a.speed, d0: walked });
+      const z1 = a.toZ ?? elev;
+      segments.push({ kind: "walk", t0: t, t1: t + dur, from: pos, to: [a.to[0], a.to[1]], heading: h, speed: a.speed, d0: walked, z0: elev, z1 });
+      elev = z1;
       walked += len;
       t += dur;
       pos = [a.to[0], a.to[1]];
       heading = h;
     } else if (a.type === "stop") {
       if (a.durationS <= 0) continue;
-      segments.push({ kind: "stop", t0: t, t1: t + a.durationS, at: pos, heading });
+      segments.push({ kind: "stop", t0: t, t1: t + a.durationS, at: pos, heading, z0: elev });
       t += a.durationS;
     } else if (a.type === "turn") {
       const h1 = (a.headingDeg * Math.PI) / 180;
-      segments.push({ kind: "turn", t0: t, t1: t + a.durationS, at: pos, h0: heading, h1: heading + wrapAngle(h1 - heading) });
+      segments.push({ kind: "turn", t0: t, t1: t + a.durationS, at: pos, h0: heading, h1: heading + wrapAngle(h1 - heading), z0: elev });
       t += a.durationS;
       heading = h1;
     } else if (a.type === "sit") {
       if (a.durationS <= 0) continue;
-      segments.push({ kind: "sit", t0: t, t1: t + a.durationS, at: pos, heading });
+      segments.push({ kind: "sit", t0: t, t1: t + a.durationS, at: pos, heading, z0: elev });
       t += a.durationS;
     }
   }
   if (segments.length === 0) {
-    segments.push({ kind: "stop", t0: 0, t1: 1, at: pos, heading });
+    segments.push({ kind: "stop", t0: 0, t1: 1, at: pos, heading, z0: 0 });
     t = 1;
   }
   return { spec, segments, period: t };
+}
+
+function endElevation(spec: SubjectSpec): number {
+  let z = 0;
+  for (const a of spec.actions) if (a.type === "walk" && a.toZ !== undefined) z = a.toZ;
+  return z;
 }
 
 function simulateEnd(spec: SubjectSpec): Vec2 {
@@ -118,11 +127,15 @@ export function subjectStateAt(path: CompiledPath, time: number): SubjectState {
   let posture: Posture = "standing";
   let sitBlend = 0;
   let gaitPhase = 0;
+  let elev = seg.z0;
+  let vz = 0;
   switch (seg.kind) {
     case "walk": {
       const f = Math.min(1, Math.max(0, (tt - seg.t0) / (seg.t1 - seg.t0)));
       x = seg.from[0] + (seg.to[0] - seg.from[0]) * f;
       y = seg.from[1] + (seg.to[1] - seg.from[1]) * f;
+      elev = seg.z0 + (seg.z1 - seg.z0) * f;
+      vz = (seg.z1 - seg.z0) / (seg.t1 - seg.t0);
       heading = seg.heading;
       vx = Math.cos(heading) * seg.speed;
       vy = Math.sin(heading) * seg.speed;
@@ -155,6 +168,7 @@ export function subjectStateAt(path: CompiledPath, time: number): SubjectState {
     }
   }
   const joints = skeleton(x, y, heading, spec.heightM, gaitPhase, posture === "walking", sitBlend);
+  if (elev !== 0) for (let i = 2; i < joints.length; i += 3) joints[i] += elev;
   const centreZ = (joints[5 * 3 + 2] + joints[6 * 3 + 2] + joints[11 * 3 + 2] + joints[12 * 3 + 2]) / 4;
   const J = (i: number): [number, number, number] => [joints[i * 3], joints[i * 3 + 1], joints[i * 3 + 2]];
   const torso: [number, number, number] = [
@@ -173,14 +187,14 @@ export function subjectStateAt(path: CompiledPath, time: number): SubjectState {
   return {
     present: true,
     position: [x, y, centreZ],
-    velocity: [vx, vy, 0],
+    velocity: [vx, vy, vz],
     heading,
     posture,
     sitBlend,
     gaitPhase,
     joints,
     scatterers,
-    axisBottom: 0.05,
+    axisBottom: elev + 0.05,
     axisTop: joints[2] + 0.08,
   };
 }

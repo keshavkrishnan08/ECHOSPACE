@@ -71,9 +71,9 @@ export function ArenaPage() {
   const exportSummary = () => {
     const sums = summarize(history.summaries);
     const md = [
-      `# ECHOSPACE simulation summary — scenario ${def.key}: ${def.title}`,
+      `# ECHO simulation summary — scenario ${def.key}: ${def.title}`,
       "",
-      `> SIMULATION RESULTS. Computed against synthetic ground truth produced by the ECHOSPACE simulator (${SOFTWARE_VERSION}); not physical measurements.`,
+      `> SIMULATION RESULTS. Computed against synthetic ground truth produced by the ECHO simulator (${SOFTWARE_VERSION}); not physical measurements.`,
       "",
       `- Objective: ${def.objective}`,
       `- Seed: ${s.config.seed} · config hash: ${frame?.provenance.configHash ?? "n/a"} · model: ${frame?.provenance.modelId}@${frame?.provenance.modelVersion}`,

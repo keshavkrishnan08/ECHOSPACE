@@ -5,12 +5,11 @@ import * as Tabs from "@radix-ui/react-tabs";
 import { useState } from "react";
 import { Dialog } from "@/components/ui/dialog";
 import { EmptyState } from "@/components/ui/states";
-import { ArchitectureDiagram } from "./Diagrams";
-import { PURPOSE } from "./content";
+import { STACK } from "./content";
 
 const VIDEOS = [
-  { id: "demo-1", title: "One person", blurb: "A simulated person walks, sits and moves behind a wall while the system follows them from Wi-Fi signals alone." },
-  { id: "demo-2", title: "Harder situations", blurb: "Two and three people, a weak signal, an empty room and too few sensors, including where it fails." },
+  { id: "demo-1", title: "One person", blurb: "A simulated person walks and sits and moves behind a wall and climbs stairs. The system follows them from Wi-Fi signals alone." },
+  { id: "demo-2", title: "Harder situations", blurb: "Two people and three people. A weak signal. An empty room. Too few sensors. Including where it fails." },
 ];
 
 function VideoCard({ id, title, blurb }: { id: string; title: string; blurb: string }) {
@@ -58,27 +57,25 @@ function Situations() {
   );
 }
 
-function Purpose() {
+function Stack() {
   return (
-    <article className="mx-auto max-w-2xl py-4" data-testid="purpose">
-      <p className="text-lg leading-relaxed text-fg">{PURPOSE.lead}</p>
-      {PURPOSE.body.map((p, i) => <p key={i} className="mt-3 text-sm leading-relaxed text-muted">{p}</p>)}
-      <h2 className="mt-12 text-2xs font-semibold uppercase tracking-[0.12em] text-faint">How it was built</h2>
-      <div className="mt-4 overflow-x-auto rounded-md border border-line bg-surface p-4"><ArchitectureDiagram /></div>
-      {PURPOSE.technical.map((s) => (
-        <section key={s.title} className="mt-6">
-          <h3 className="text-sm font-semibold text-signal">{s.title}</h3>
-          <p className="mt-1.5 text-sm leading-relaxed text-muted">{s.body}</p>
+    <div className="mx-auto grid max-w-4xl gap-x-12 gap-y-8 py-4 sm:grid-cols-2" data-testid="stack">
+      {STACK.map((g) => (
+        <section key={g.group}>
+          <h2 className="text-2xs font-semibold uppercase tracking-[0.12em] text-signal">{g.group}</h2>
+          <ul className="mt-2 space-y-1.5">
+            {g.items.map((x) => <li key={x} className="text-sm text-muted">{x}</li>)}
+          </ul>
         </section>
       ))}
-    </article>
+    </div>
   );
 }
 
 const TABS = [
   { value: "demo", label: "Demo" },
   { value: "situations", label: "Situations" },
-  { value: "purpose", label: "Purpose" },
+  { value: "stack", label: "Stack" },
 ];
 
 export function ShowcasePage() {
@@ -98,7 +95,7 @@ export function ShowcasePage() {
       <div className="min-h-0 flex-1 overflow-y-auto p-4">
         {tab === "demo" && <div className="mx-auto max-w-5xl space-y-4">{VIDEOS.map((v) => <VideoCard key={v.id} {...v} />)}</div>}
         {tab === "situations" && <Situations />}
-        {tab === "purpose" && <Purpose />}
+        {tab === "stack" && <Stack />}
       </div>
     </div>
   );

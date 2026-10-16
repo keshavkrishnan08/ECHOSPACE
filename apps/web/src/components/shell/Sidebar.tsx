@@ -44,7 +44,7 @@ export function Sidebar() {
         <Logo />
         {!collapsed && (
           <span className="text-[13px] font-semibold tracking-[0.18em]">
-            ECHO<span className="text-signal">SPACE</span>
+            ECH<span className="text-signal">O</span>
           </span>
         )}
       </div>

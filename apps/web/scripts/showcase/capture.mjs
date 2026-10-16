@@ -14,14 +14,15 @@ const local = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
 mkdirSync(out, { recursive: true });
 
 const SHOTS = [
-  ["walk", 16000, "One person walking", "The ring follows the walker closely. Movement disturbs many radio links at once, which is the easiest case."],
-  ["sit", 22000, "Sitting still", "Once the person stops, the signal change is small. The track holds but the estimate wanders more."],
-  ["wall", 16000, "Behind a wall", "Radio goes through the partition, weakened. The person is still found, with more error near the wall."],
-  ["two", 16000, "Two people crossing", "Each person gets a ring, but crossing paths can swap them or leave a duplicate ring behind."],
-  ["three", 18000, "Three people", "More bodies means overlapping signal. People can be missed for a while, or one person can show up as two rings."],
+  ["walk", 16000, "One person walking", "The ring follows the walker closely. Movement disturbs many radio links at once. This is the easiest case."],
+  ["sit", 22000, "Sitting still", "Once the person stops the signal change is small. The track holds but the estimate wanders more."],
+  ["wall", 16000, "Behind a wall", "Radio goes through the partition but weaker. The person is still found with more error near the wall."],
+  ["two", 16000, "Two people crossing", "Each person gets a ring. Crossing paths can swap them or leave a duplicate ring behind."],
+  ["three", 18000, "Three people", "More bodies means overlapping signal. People can be missed for a while. One person can also show up as two rings."],
   ["noisy", 18000, "Weak signal", "Low signal and lost packets slow detection down. The status line flags the weak input."],
   ["empty", 14000, "Empty room", "Nobody is there and nothing is drawn. Noise alone does not create a person."],
-  ["sparse", 12000, "Too few sensors", "With a single radio link the position cannot be worked out, so the system says so instead of guessing."],
+  ["stairs", 13000, "Climbing stairs", "Two floors joined by a staircase. The ring follows the person up and the status line names the floor they were detected on."],
+  ["sparse", 12000, "Too few sensors", "With a single radio link the position cannot be worked out. The system says so instead of guessing."],
 ];
 
 const browser = await chromium.launch({

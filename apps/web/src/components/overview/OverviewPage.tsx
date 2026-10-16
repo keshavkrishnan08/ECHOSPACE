@@ -36,7 +36,7 @@ export function OverviewPage() {
             <Logo size={30} />
             <div>
               <h1 className="text-lg font-semibold tracking-[0.2em]">
-                ECHO<span className="text-signal">SPACE</span>
+                ECH<span className="text-signal">O</span>
               </h1>
               <p className="text-xs text-muted">Ambient RF → 3D spatial sensing research instrument</p>
             </div>

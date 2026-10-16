@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, SerializerFunctionWrapHandler, model_serializer
 from pydantic.alias_generators import to_camel
 
 Vec3 = tuple[float, float, float]
@@ -118,6 +118,17 @@ class WalkAction(Model):
     type: Literal["walk"]
     to: Vec2
     speed: float = Field(default=1.0, ge=0.1, le=3)
+    to_z: float | None = Field(default=None, ge=0, le=5)
+    """Floor height at the end of the walk (m), e.g. the top of a staircase."""
+
+    @model_serializer(mode="wrap")
+    def _omit_unset_to_z(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        # TypeScript leaves the key out when unset; mirror it so configs round-trip unchanged
+        out: dict[str, Any] = handler(self)
+        if self.to_z is None:
+            out.pop("toZ", None)
+            out.pop("to_z", None)
+        return out
 
 
 class StopAction(Model):

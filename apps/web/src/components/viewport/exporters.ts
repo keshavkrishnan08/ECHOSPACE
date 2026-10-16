@@ -9,7 +9,7 @@ export function exportPly(frame: ReconstructionFrame, config: ScenarioConfig): s
   const lines = [
     "ply",
     "format ascii 1.0",
-    `comment generator ECHOSPACE ${SOFTWARE_VERSION}`,
+    `comment generator ECHO ${SOFTWARE_VERSION}`,
     `comment source_mode ${pv.sourceMode}${pv.sourceMode === "synthetic" ? " (SIMULATED, not a measurement)" : ""}`,
     `comment source_id ${pv.sourceId}`,
     `comment scenario ${pv.scenario ?? "none"} seed ${pv.seed ?? "none"}`,

@@ -112,3 +112,18 @@ describe("channel simulator", () => {
     expect(Number.isNaN(p.re[0])).toBe(true);
   });
 });
+
+describe("stairs", () => {
+  it("raises the body with the floor during a walk with toZ and keeps the new height", () => {
+    const spec = { id: "s", label: "S", heightM: 1.75, radiusM: 0.22, rcsM2: 1, start: [1, 1] as [number, number], startHeadingDeg: 0, startDelayS: 0, loop: false,
+      actions: [{ type: "walk" as const, to: [3, 1] as [number, number], speed: 1, toZ: 1.5 }, { type: "stop" as const, durationS: 2 }] };
+    const path = compilePath(spec);
+    const flat = subjectStateAt(compilePath({ ...spec, actions: [{ type: "walk", to: [3, 1], speed: 1 }, { type: "stop", durationS: 2 }] }), 1);
+    const mid = subjectStateAt(path, 1);
+    expect(mid.joints[2] - flat.joints[2]).toBeCloseTo(0.75, 4);
+    expect(mid.velocity[2]).toBeCloseTo(0.75, 6);
+    const top = subjectStateAt(path, 3);
+    expect(top.axisBottom).toBeCloseTo(1.55, 6);
+    expect(top.position[2]).toBeGreaterThan(2);
+  });
+});

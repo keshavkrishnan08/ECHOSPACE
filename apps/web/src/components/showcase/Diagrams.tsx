@@ -32,9 +32,9 @@ export function ArchitectureDiagram() {
     <svg viewBox="0 0 960 470" className="h-auto w-full" role="img" aria-label="System architecture">
       <rect x={10} y={10} width={600} height={300} rx={10} fill={C.surface} stroke={C.line} strokeDasharray="4 4" />
       <text x={26} y={34} fill={C.signal} fontSize={12} fontWeight={600} letterSpacing={1.5}>BROWSER</text>
-      <Box x={30} y={50} w={250} h={100} title="Next.js UI" sub={"Lab, Arena, Studio, Workbench\nZustand session + frame history\nR3F viewport, ECharts, Recharts"} color={C.geometry} />
-      <Box x={340} y={50} w={250} h={100} title="Engine worker" sub={"simulator → DSP → RTI → tracker\nbounded queues, stage timers\ntransferable frames + ack"} color={C.signal} />
-      <Box x={340} y={190} w={250} h={100} title="Helper workers" sub={"comparison (lockstep)\noffline ablations, benchmark\ndeterministic replay digest"} color={C.track} />
+      <Box x={30} y={50} w={250} h={100} title="Next.js UI" sub={"Lab · Arena · Studio · Workbench\nZustand session + frame history\nR3F viewport · ECharts · Recharts"} color={C.geometry} />
+      <Box x={340} y={50} w={250} h={100} title="Engine worker" sub={"simulator → DSP → RTI → tracker\nbounded queues · stage timers\ntransferable frames + ack"} color={C.signal} />
+      <Box x={340} y={190} w={250} h={100} title="Helper workers" sub={"comparison (lockstep)\noffline ablations · benchmark\ndeterministic replay digest"} color={C.track} />
       <Box x={30} y={190} w={250} h={100} title="Local storage" sub={"IndexedDB experiments\npersisted panels and layers\nno raw signal logging"} />
       <Arrow x1={280} y1={92} x2={338} y2={92} label="config" />
       <Arrow x1={338} y1={118} x2={282} y2={118} label="frames" color={C.signal} />
@@ -42,12 +42,12 @@ export function ArchitectureDiagram() {
       <Arrow x1={465} y1={150} x2={465} y2={188} />
       <rect x={640} y={10} width={310} height={300} rx={10} fill={C.surface} stroke={C.line} strokeDasharray="4 4" />
       <text x={656} y={34} fill={C.ok} fontSize={12} fontWeight={600} letterSpacing={1.5}>OPTIONAL SERVICES</text>
-      <Box x={660} y={50} w={270} h={100} title="FastAPI control plane" sub={"sessions, experiments, models\nrecordings with consent\nWebSocket stream, request ids"} color={C.ok} />
+      <Box x={660} y={50} w={270} h={100} title="FastAPI control plane" sub={"sessions · experiments · models\nrecordings with consent\nWebSocket stream · request ids"} color={C.ok} />
       <Box x={660} y={190} w={270} h={100} title="Python reference engine" sub={"NumPy / SciPy port\nbit-for-bit parity fixtures\nridge model training"} color={C.ok} />
       <Arrow x1={590} y1={80} x2={658} y2={80} label="REST / WS" />
       <Arrow x1={795} y1={150} x2={795} y2={188} />
-      <Box x={30} y={350} w={260} h={100} title="C++20 DSP library" sub={"FFT, sanitization, RTI apply\nback-projection, SPSC ring\nctypes bindings, benchmarks"} color={C.warn} />
-      <Box x={340} y={350} w={260} h={100} title="CUDA kernels" sub={"optional, off by default\nnot compiled or run here\nCPU path is the fallback"} />
+      <Box x={30} y={350} w={260} h={100} title="C++20 DSP library" sub={"FFT · sanitization · RTI apply\nback-projection · SPSC ring\nctypes bindings · benchmarks"} color={C.warn} />
+      <Box x={340} y={350} w={260} h={100} title="CUDA kernels" sub={"optional · off by default\nnot compiled or run here\nCPU path is the fallback"} />
       <Box x={660} y={350} w={270} h={100} title="Storage" sub={"PostgreSQL or SQLite metadata\nS3 / MinIO or local artifacts\nAlembic migrations"} />
       <Arrow x1={795} y1={290} x2={795} y2={348} />
       <Arrow x1={290} y1={400} x2={338} y2={400} />
@@ -76,8 +76,8 @@ export function PipelineDiagram() {
       <text x={10} y={40} fill={C.signal} fontSize={11} letterSpacing={1}>SIGNAL CONDITIONING (CSI → link features)</text>
       <text x={563} y={40} fill={C.geometry} fontSize={11} letterSpacing={1}>IMAGING</text>
       <text x={721} y={40} fill={C.track} fontSize={11} letterSpacing={1}>RECONSTRUCTION + TRACKING</text>
-      <text x={10} y={150} fill={C.muted} fontSize={11}>Each stage reports input and output shape, dtype, measured duration, queue delay, drops and errors.</text>
-      <text x={10} y={170} fill={C.muted} fontSize={11}>Estimate is dashed: CSI sources already provide channel estimates, so the stage is marked not applicable.</text>
+      <text x={10} y={150} fill={C.muted} fontSize={11}>Each stage reports shapes · dtype · duration · queue delay · drops · errors.</text>
+      <text x={10} y={170} fill={C.muted} fontSize={11}>Estimate is dashed because CSI sources already provide channel estimates.</text>
     </svg>
   );
 }
@@ -85,9 +85,9 @@ export function PipelineDiagram() {
 export function ReproDiagram() {
   return (
     <svg viewBox="0 0 960 230" className="h-auto w-full" role="img" aria-label="Reproducibility flow">
-      <Box x={10} y={20} w={190} h={80} title="Launch config" sub={"scenario, seed, sensors\nmodel + preprocessing ver."} color={C.signal} />
+      <Box x={10} y={20} w={190} h={80} title="Launch config" sub={"scenario · seed · sensors\nmodel + preprocessing ver."} color={C.signal} />
       <Box x={10} y={130} w={190} h={80} title="Mid-run changes" sub={"recorded at the frame\nindex where they applied"} color={C.signal} />
-      <Box x={270} y={70} w={200} h={90} title="Engine" sub={"same seed, same inputs\nchanges at frame boundaries\nno UI timing dependence"} color={C.geometry} />
+      <Box x={270} y={70} w={200} h={90} title="Engine" sub={"same seed · same inputs\nchanges at frame boundaries\nno UI timing dependence"} color={C.geometry} />
       <Box x={540} y={20} w={190} h={80} title="Live run" sub={"may drop under load\n(bounded queues)"} color={C.warn} />
       <Box x={540} y={130} w={190} h={80} title="Unpaced replay" sub={"first 40 frames\nSHA-256 digest"} color={C.ok} />
       <Box x={790} y={70} w={160} h={90} title="Experiment" sub={"digest + metrics\nreplay verifies\nmatch or mismatch"} color={C.track} />

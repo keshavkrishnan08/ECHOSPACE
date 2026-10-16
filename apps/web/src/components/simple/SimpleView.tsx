@@ -10,13 +10,23 @@ import { history } from "@/lib/engine/history";
 import { Logo } from "@/components/shell/Sidebar";
 import { cn } from "@/lib/format";
 import { CleanScene } from "./CleanScene";
-import { SITUATIONS } from "./situations";
+import { detectedFloor, SITUATIONS } from "./situations";
 
-function describe(frame: ReconstructionFrame | null): { headline: string; detail: string; tone: "ok" | "warn" | "muted" } {
+const FLOOR_NAME = ["downstairs", "upstairs"];
+
+/** Where the simulated person really is, from the feet of the ground truth skeleton. */
+function trueFloor(floors: number[], joints: Float32Array): string {
+  const feet = Math.min(joints[15 * 3 + 2], joints[16 * 3 + 2]) - 0.07;
+  if (feet < 0.3) return "downstairs";
+  if (feet > floors[1] - 0.3) return "upstairs";
+  return "on the stairs";
+}
+
+function describe(frame: ReconstructionFrame | null, floors?: number[]): { headline: string; detail: string; tone: "ok" | "warn" | "muted" } {
   if (!frame) return { headline: "Starting", detail: "Calibrating on an empty room…", tone: "muted" };
   if (frame.state === "calibrating") return { headline: "Calibrating", detail: "Learning what the empty room looks like.", tone: "muted" };
   if (frame.capability.modelStatus === "unsupported") {
-    return { headline: "Can't locate anyone", detail: /Insufficient/.test(frame.capability.modelMessage) ? "There is only one radio link, which is not enough to tell where anyone is. The system says so instead of guessing." : frame.capability.modelMessage, tone: "warn" };
+    return { headline: "Can't locate anyone", detail: /Insufficient/.test(frame.capability.modelMessage) ? "One radio link is not enough to tell where anyone is. The system says so instead of guessing." : frame.capability.modelMessage, tone: "warn" };
   }
   const people = frame.groundTruth?.length ?? 0;
   const found = frame.tracks.filter((t) => t.confirmed).length;
@@ -33,6 +43,11 @@ function describe(frame: ReconstructionFrame | null): { headline: string; detail
   if (found < people) parts.push(found === 0 ? "not found yet" : `${people - found} missed`);
   if (found > people) parts.push(`${found - people} extra`);
   if (weak) parts.push("weak signal");
+  if (floors && frame.groundTruth?.[0]) {
+    const where = trueFloor(floors, frame.groundTruth[0].joints);
+    const best = frame.tracks.filter((t) => t.confirmed).sort((a, b) => b.confidence - a.confidence)[0];
+    parts.unshift(best ? `${where} · detected ${FLOOR_NAME[detectedFloor(floors, best.position[2])]}` : where);
+  }
   return { headline: head, detail: parts.join(" · ") || "tracking", tone: found === people && !weak ? "ok" : "warn" };
 }
 
@@ -95,7 +110,7 @@ export function SimpleView() {
   const live = useFrame(20);
   const frame = rv ? rv.cur : live;
   const current = SITUATIONS.find((x) => x.id === s.scenarioKey) ?? SITUATIONS[0];
-  const status = describe(frame);
+  const status = describe(frame, current.floors);
 
   useEffect(() => {
     if (params.get("render") === "1") return;
@@ -112,7 +127,7 @@ export function SimpleView() {
         <div className="flex items-center gap-2.5">
           <Logo size={20} />
           <span className="text-[13px] font-semibold tracking-[0.22em]">
-            ECHO<span className="text-signal">SPACE</span>
+            ECH<span className="text-signal">O</span>
           </span>
           <span className="ml-3 hidden text-xs text-muted sm:inline">Seeing a room through its Wi-Fi signals · simulated</span>
         </div>
@@ -122,7 +137,7 @@ export function SimpleView() {
       </header>
 
       <div className="min-h-0 flex-1">
-        <CleanScene frame={frame} config={s.config} {...(rv ? { prev: rv.prev, alpha: rv.alpha, angle: rv.angle } : {})} />
+        <CleanScene frame={frame} config={s.config} floors={current.floors} {...(rv ? { prev: rv.prev, alpha: rv.alpha, angle: rv.angle } : {})} />
       </div>
 
       <div className="pointer-events-none absolute left-5 top-16 max-w-sm">
@@ -137,7 +152,7 @@ export function SimpleView() {
         <div className="mt-1 text-sm text-muted">{status.detail}</div>
         <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-xs text-faint">
           <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-[#e9edf3]" /> simulated person</span>
-          <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full border-2 border-track" /> what ECHOSPACE detected</span>
+          <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full border-2 border-track" /> what ECHO detected</span>
           <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-ok" /> estimated occupancy</span>
         </div>
       </div>

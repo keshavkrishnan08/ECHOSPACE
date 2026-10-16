@@ -3,7 +3,7 @@ import "./globals.css";
 import { AppShell } from "@/components/shell/AppShell";
 
 export const metadata: Metadata = {
-  title: "ECHOSPACE — RF spatial sensing lab",
+  title: "ECHO · Wi-Fi spatial sensing",
   description: "Ambient RF-to-3D spatial imaging research platform. Synthetic simulation, signal processing and reconstruction with explicit uncertainty.",
 };
 

@@ -59,7 +59,7 @@ export function SimulatedPerson({ subject }: { subject: GroundTruthSubject }) {
       <mesh ref={head} material={material}>
         <sphereGeometry args={[0.11 * s, 20, 16]} />
       </mesh>
-      <mesh position={[subject.position[0], subject.position[1], 0.005]} rotation={[0, 0, 0]}>
+      <mesh position={[subject.position[0], subject.position[1], Math.max(0, Math.min(j[15 * 3 + 2], j[16 * 3 + 2]) - 0.07) + 0.005]}>
         <circleGeometry args={[0.28, 32]} />
         <meshBasicMaterial color="#000000" transparent opacity={0.35} />
       </mesh>
@@ -67,12 +67,12 @@ export function SimulatedPerson({ subject }: { subject: GroundTruthSubject }) {
   );
 }
 
-/** What ECHOSPACE detected: a ring on the floor sized by 2σ uncertainty and a soft beam. */
-export function DetectionMarker({ track }: { track: Track }) {
+/** What ECHO detected: a ring on the floor sized by 2σ uncertainty and a soft beam. */
+export function DetectionMarker({ track, floorZ = 0 }: { track: Track; floorZ?: number }) {
   const r = Math.min(0.8, Math.max(0.25, 2 * Math.sqrt(Math.max(track.covariance[0], track.covariance[2]))));
   const [x, y] = track.position;
   return (
-    <group position={[x, y, 0]}>
+    <group position={[x, y, floorZ]}>
       <mesh position={[0, 0, 0.02]}>
         <ringGeometry args={[r * 0.9, r, 48]} />
         <meshBasicMaterial color="#a78bfa" transparent opacity={0.95} side={THREE.DoubleSide} />

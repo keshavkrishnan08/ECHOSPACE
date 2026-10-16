@@ -4,7 +4,13 @@ import { Obstacle, Opening, Room, SensorNode, Vec2 } from "./scene";
 export const SCENARIO_SCHEMA_VERSION = 1 as const;
 
 export const MotionAction = z.discriminatedUnion("type", [
-  z.object({ type: z.literal("walk"), to: Vec2, speed: z.number().min(0.1).max(3).default(1.0) }),
+  z.object({
+    type: z.literal("walk"),
+    to: Vec2,
+    speed: z.number().min(0.1).max(3).default(1.0),
+    /** Floor height at the end of the walk (m), e.g. the top of a staircase. Omitted = unchanged. */
+    toZ: z.number().min(0).max(5).optional(),
+  }),
   z.object({ type: z.literal("stop"), durationS: z.number().min(0).max(120) }),
   z.object({ type: z.literal("turn"), headingDeg: z.number(), durationS: z.number().min(0.1).max(10).default(1) }),
   z.object({ type: z.literal("sit"), durationS: z.number().min(0).max(120) }),
