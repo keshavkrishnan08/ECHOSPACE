@@ -50,7 +50,8 @@ export const ClientCommand = z.discriminatedUnion("cmd", [
 export type ClientCommand = z.infer<typeof ClientCommand>;
 
 export function decodeB64Float32(b: z.infer<typeof B64Float32>): Float32Array {
-  const bin = typeof atob === "function" ? atob(b.data) : Buffer.from(b.data, "base64").toString("binary");
+  // atob is global in every browser and in Node 16+, so no Buffer fallback (and no Node types) is needed.
+  const bin = atob(b.data);
   const bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
   const out = new Float32Array(bytes.buffer, 0, b.length);
