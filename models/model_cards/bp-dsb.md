@@ -1,4 +1,4 @@
-# Model card: `bp-dsb` — coherent delay-and-sum back-projection
+# Model card: `bp-dsb`: coherent delay-and-sum back-projection
 
 | field | value |
 | --- | --- |

@@ -61,11 +61,11 @@ export function DatasetsPage() {
                         <td className="num">{m.durationS !== null ? `${(m.durationS / 60).toFixed(1)} min` : "unknown"}</td>
                         <td className="num">{m.channelCount ?? "unknown"}</td>
                         <td className="num">{m.sampleRateHz !== null ? `${m.sampleRateHz} Hz` : "unknown"}</td>
-                        <td className="num">{Object.keys(m.splits).join(" / ") || "—"}</td>
+                        <td className="num">{Object.keys(m.splits).join(" / ") || "-"}</td>
                         <td><Badge tone={m.validation.status === "valid" ? "ok" : m.validation.status === "invalid" ? "err" : "warn"}>{m.validation.status}</Badge></td>
                       </>
                     ) : (
-                      <td colSpan={8} className="px-3 py-1.5 text-err">{file}: invalid manifest — {error}</td>
+                      <td colSpan={8} className="px-3 py-1.5 text-err">{file}: invalid manifest, {error}</td>
                     )}
                   </tr>
                 ))}

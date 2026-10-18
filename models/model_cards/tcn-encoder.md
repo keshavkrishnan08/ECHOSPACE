@@ -1,9 +1,9 @@
-# Model card: `tcn-encoder` — Temporal convolutional encoder (interface slot)
+# Model card: `tcn-encoder`: Temporal convolutional encoder (interface slot)
 
 | field | value |
 | --- | --- |
 | family | tcn |
-| version | — |
+| version | - |
 | status | **unavailable** |
 | preprocessing | pp-1.0.0 (intended) |
 

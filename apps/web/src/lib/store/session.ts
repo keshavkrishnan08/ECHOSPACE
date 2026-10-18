@@ -120,7 +120,7 @@ export const useSession = create<SessionState>()((set, get) => {
   };
 
   return {
-    sessionId: "ses_——————",
+    sessionId: "ses_, , , ",
     sourceMode: "synthetic",
     sourceLabel: "Synthetic simulation",
     config: demoScenario(),

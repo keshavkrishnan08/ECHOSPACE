@@ -53,8 +53,8 @@ export const MODEL_VERSIONS: Record<string, string> = {
   "rti-bayes": "1.0.0",
   "bp-dsb": "1.0.0",
   "ridge-floor": "1.0.0",
-  "tcn-encoder": "—",
-  "transformer-encoder": "—",
+  "tcn-encoder": "-",
+  "transformer-encoder": "-",
 };
 
 const now = () => (typeof performance !== "undefined" ? performance.now() : Date.now());
@@ -121,7 +121,7 @@ export class Pipeline {
         id,
         {
           id, label: STAGE_LABELS[id], enabled: true, bypassed: Boolean(cfg.pipeline.bypass[id]), applicable: true,
-          inputShape: "—", outputShape: "—", dtype: "—", durationMs: 0, queueDelayMs: 0, itemsIn: 0, itemsOut: 0, drops: 0, errors: 0, note: "",
+          inputShape: "-", outputShape: "-", dtype: "-", durationMs: 0, queueDelayMs: 0, itemsIn: 0, itemsOut: 0, drops: 0, errors: 0, note: "",
         } satisfies StageRecord,
       ]),
     ) as Record<StageId, StageRecord>;
@@ -319,7 +319,7 @@ export class Pipeline {
       durationMs: bufDur, itemsIn: v.accepted.length, itemsOut: v.accepted.length,
       note: `bounded history, ${cfg.dsp.bufferSeconds.toFixed(2)} s per link; ${historyDrops} oldest packets aged out this frame`,
     });
-    Object.assign(st.estimate, { inputShape: "—", outputShape: "—", dtype: "—", durationMs: 0, bypassed: true });
+    Object.assign(st.estimate, { inputShape: "-", outputShape: "-", dtype: "-", durationMs: 0, bypassed: true });
     Object.assign(st.preprocess, {
       inputShape: `${v.accepted.length} × [M × ${K}] complex`, outputShape: `${v.accepted.length} × [M × ${K}] complex (sanitized)`, dtype: "complex128",
       durationMs: sanTime, itemsIn: v.accepted.length, itemsOut: v.accepted.length, bypassed: !cfg.dsp.phaseSanitize || Boolean(cfg.pipeline.bypass.preprocess),

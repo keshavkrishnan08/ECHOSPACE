@@ -6,11 +6,11 @@ import { compilePath, subjectStateAt } from "../src/sim/trajectory";
 import { segmentBoxOverlap, segmentSegmentDistance } from "../src/sim/geometry";
 
 describe("geometry", () => {
-  it("computes segment–box overlap", () => {
+  it("computes segment-box overlap", () => {
     expect(segmentBoxOverlap([0, 0.5, 0.5], [3, 0.5, 0.5], [1, 0, 0], [2, 1, 1])).toBeCloseTo(1, 9);
     expect(segmentBoxOverlap([0, 2, 0.5], [3, 2, 0.5], [1, 0, 0], [2, 1, 1])).toBe(0);
   });
-  it("computes segment–segment distance", () => {
+  it("computes segment-segment distance", () => {
     const r = segmentSegmentDistance([0, 0, 1], [2, 0, 1], [1, 1, 0], [1, 1, 2]);
     expect(r.d).toBeCloseTo(1, 9);
     expect(r.s).toBeCloseTo(0.5, 9);

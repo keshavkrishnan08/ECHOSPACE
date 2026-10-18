@@ -98,7 +98,7 @@ export function parseEsp32Csv(text: string, name = "esp32"): ParsedRecording {
     }
     rows.push({ mac: col("mac") ?? "unknown", ts: Number(col("local_timestamp")), rssi: Number(col("rssi")), ch: Number(col("channel")), values });
   }
-  if (!rows.length) throw new RecordingFormatError("no CSI_DATA rows found — is this an ESP32-CSI-Tool CSV log?");
+  if (!rows.length) throw new RecordingFormatError("no CSI_DATA rows found, is this an ESP32-CSI-Tool CSV log?");
   const K = rows[0].values.length / 2;
   const kept = rows.filter((r) => r.values.length / 2 === K);
   if (kept.length < rows.length) warnings.push(`${rows.length - kept.length} rows with a different subcarrier count were skipped`);

@@ -37,7 +37,7 @@ export function spdInverse(a: Float64Array, n: number): Float64Array {
   return inv;
 }
 
-/** Standard normal CDF (Abramowitz–Stegun 7.1.26 erf approximation, |err| < 1.5e-7). */
+/** Standard normal CDF (Abramowitz-Stegun 7.1.26 erf approximation, |err| < 1.5e-7). */
 export function normCdf(x: number): number {
   const z = Math.abs(x) / Math.SQRT2;
   const t = 1 / (1 + 0.3275911 * z);

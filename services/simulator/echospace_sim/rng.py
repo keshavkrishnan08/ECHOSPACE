@@ -1,7 +1,7 @@
 """Deterministic 32-bit PRNG (xoshiro128**) seeded through splitmix32.
 
 Bit-exact port of packages/engine/src/sim/rng.ts. Floats are derived as u32 / 2^32, normals with
-Box–Muller consuming two uniforms per sample, so a given seed yields the same stream in both engines.
+Box-Muller consuming two uniforms per sample, so a given seed yields the same stream in both engines.
 """
 
 from __future__ import annotations
@@ -81,7 +81,7 @@ class Rng:
         return self.next_u32() / _TWO_POW_32
 
     def normal(self) -> float:
-        """Standard normal via Box–Muller (cosine branch only, two uniforms per call)."""
+        """Standard normal via Box-Muller (cosine branch only, two uniforms per call)."""
         u1 = 1 - self.uniform()
         u2 = self.uniform()
         return math.sqrt(-2 * math.log(u1)) * math.cos(_TWO_PI * u2)

@@ -46,7 +46,7 @@ export function SignalPlots({ tab, frame }: { tab: SignalTab; frame: Reconstruct
 
   if (!frame) return <EmptyState title="No frames yet">Start the session to see signals.</EmptyState>;
   const csi = frame.csi;
-  const brushLabel = brush ? `${brush[0].toFixed(2)}–${brush[1].toFixed(2)} s` : null;
+  const brushLabel = brush ? `${brush[0].toFixed(2)}-${brush[1].toFixed(2)} s` : null;
   const brushOpt = { toolbox: { show: true, right: 8, top: 0, itemSize: 12, iconStyle: { borderColor: "#5c6b81" }, feature: { brush: { type: ["lineX", "clear"] as Array<"lineX" | "clear"> } } }, brush: { xAxisIndex: 0, brushStyle: { color: "rgba(45,212,230,0.12)", borderColor: "#2dd4e6" } } };
 
   switch (tab) {
@@ -89,7 +89,7 @@ export function SignalPlots({ tab, frame }: { tab: SignalTab; frame: Reconstruct
         }),
       }));
       return (
-        <PlotFrame title={`CSI constellation · ${linkId}`} kind="measured" units="complex channel coefficients, normalized units" csv={() => series.flatMap((s, m) => s.data.map(([re, im], k) => ({ antenna: m, subcarrier: k, re, im, phase: view })))} note="Per-subcarrier complex channel estimates of one packet — not raw I/Q samples. A CSI source does not expose time-domain I/Q; that view requires an SDR adapter.">
+        <PlotFrame title={`CSI constellation · ${linkId}`} kind="measured" units="complex channel coefficients, normalized units" csv={() => series.flatMap((s, m) => s.data.map(([re, im], k) => ({ antenna: m, subcarrier: k, re, im, phase: view })))} note="Per-subcarrier complex channel estimates of one packet, not raw I/Q samples. A CSI source does not expose time-domain I/Q; that view requires an SDR adapter.">
           <div className="mb-1 flex justify-end"><Segmented value={view} onChange={setView} options={[{ value: "raw", label: "Raw phase" }, { value: "sanitized", label: "Sanitized" }]} /></div>
           <EChart option={{ grid: { ...grid, bottom: 36 }, tooltip: { trigger: "item", ...tooltipStyle }, legend: { top: 0, textStyle: { color: "#8b9ab0", fontSize: 10 } }, xAxis: { type: "value", name: "In-phase (Re)", nameLocation: "middle", nameGap: 22, ...axisStyle }, yAxis: { type: "value", name: "Quadrature (Im)", ...axisStyle }, dataZoom: [{ type: "inside", xAxisIndex: 0 }, { type: "inside", yAxisIndex: 0 }], series }} height={320} testId="plot-constellation" />
         </PlotFrame>
@@ -227,7 +227,7 @@ export function SignalPlots({ tab, frame }: { tab: SignalTab; frame: Reconstruct
     case "coherence": {
       const pts = frames.filter((f) => f.linkDiagnostics?.coherence !== null && f.linkDiagnostics?.coherence !== undefined);
       return (
-        <PlotFrame title={`Channel coherence · ${linkId}`} kind="derived" units="0–1 normalized correlation of consecutive packets" csv={() => pts.map((f) => ({ t_s: f.timestampS, coherence: f.linkDiagnostics!.coherence }))} note="1 means consecutive channel snapshots are identical (static scene); motion, noise and phase instability lower it.">
+        <PlotFrame title={`Channel coherence · ${linkId}`} kind="derived" units="0-1 normalized correlation of consecutive packets" csv={() => pts.map((f) => ({ t_s: f.timestampS, coherence: f.linkDiagnostics!.coherence }))} note="1 means consecutive channel snapshots are identical (static scene); motion, noise and phase instability lower it.">
           <EChart option={{ grid, tooltip: { trigger: "axis", ...tooltipStyle }, xAxis: { type: "value", name: "stream time (s)", nameLocation: "middle", nameGap: 24, min: "dataMin", max: "dataMax", ...axisStyle }, yAxis: { type: "value", min: (x: { min: number }) => Math.max(0, Math.floor(x.min * 20) / 20), max: 1, ...axisStyle }, dataZoom: zoomControls(0), series: [{ type: "line", showSymbol: false, data: pts.map((f) => [f.timestampS, f.linkDiagnostics!.coherence]), lineStyle: { color: "#5fbf8f", width: 1.2 }, markLine: cursorLine(tNow) }] }} height={300} testId="plot-coherence" />
         </PlotFrame>
       );

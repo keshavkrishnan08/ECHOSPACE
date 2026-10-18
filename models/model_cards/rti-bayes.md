@@ -1,4 +1,4 @@
-# Model card: `rti-bayes` — Bayesian radio tomographic imaging
+# Model card: `rti-bayes`: Bayesian radio tomographic imaging
 
 | field | value |
 | --- | --- |
@@ -58,4 +58,4 @@ comparison with ridge-floor: `models/baselines/ridge_floor/metrics.json` and
 ## Reference
 
 J. Wilson and N. Patwari, "Radio Tomographic Imaging with Wireless Networks," IEEE Transactions
-on Mobile Computing, vol. 9, no. 5, pp. 621–632, 2010.
+on Mobile Computing, vol. 9, no. 5, pp. 621-632, 2010.

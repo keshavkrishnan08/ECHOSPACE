@@ -53,15 +53,15 @@ export function DiagnosticsPage() {
               ["Preprocessing", PREPROCESSING_VERSION],
               ["Session", s.sessionId],
               ["State", s.status],
-              ["Init (operator build)", s.info ? `${s.info.initMs.toFixed(0)} ms` : "—"],
+              ["Init (operator build)", s.info ? `${s.info.initMs.toFixed(0)} ms` : "-"],
               ["Frames received / buffered", `${history.summaries.length} / ${history.length}`],
               ["Update rate", `${s.frameRate.toFixed(1)} Hz`],
-              ["Acquisition queue", frame ? `${frame.queues.acquisitionDepth} / ${frame.queues.acquisitionCapacity}` : "—"],
-              ["Acquisition drops (total)", frame ? String(frame.queues.acquisitionDrops) : "—"],
-              ["Engine skipped frames", frame ? String(frame.queues.framesDropped) : "—"],
+              ["Acquisition queue", frame ? `${frame.queues.acquisitionDepth} / ${frame.queues.acquisitionCapacity}` : "-"],
+              ["Acquisition drops (total)", frame ? String(frame.queues.acquisitionDrops) : "-"],
+              ["Engine skipped frames", frame ? String(frame.queues.framesDropped) : "-"],
               ["Display backpressure drops", String(s.displayDrops)],
               ["Max frames in flight", String(useSettings.getState().maxInFlightFrames)],
-              ["Stage errors (cumulative)", frame ? String(frame.stages.reduce((a, x) => a + x.errors, 0)) : "—"],
+              ["Stage errors (cumulative)", frame ? String(frame.stages.reduce((a, x) => a + x.errors, 0)) : "-"],
             ] as Array<[string, string]>).map(([k, v]) => <div key={k} className="contents"><dt className="text-muted">{k}</dt><dd>{v}</dd></div>)}
           </dl>
         </Panel>

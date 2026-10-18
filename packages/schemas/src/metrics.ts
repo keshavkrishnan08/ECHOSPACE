@@ -45,12 +45,12 @@ export const METRICS: Record<string, MetricDefinition> = {
     source: "engine calibration",
   },
   inputQuality: {
-    id: "inputQuality", label: "Input quality", unit: "0–1", kind: "signal", better: "higher",
+    id: "inputQuality", label: "Input quality", unit: "0-1", kind: "signal", better: "higher",
     definition: "Product of delivery ratio and a logistic SNR factor σ((SNR−10 dB)/3 dB). A documented heuristic, not a standard metric.",
     source: "engine features stage",
   },
   meanConfidence: {
-    id: "meanConfidence", label: "Reconstruction confidence", unit: "0–1", kind: "reconstruction", better: "higher",
+    id: "meanConfidence", label: "Reconstruction confidence", unit: "0-1", kind: "reconstruction", better: "higher",
     definition: "Mean of (1 − posterior variance ratio) over voxels inside the room. Measures how constrained the image is by the links, not whether it is correct.",
     source: "rti-bayes posterior variance / model-declared confidence",
   },
@@ -70,22 +70,22 @@ export const METRICS: Record<string, MetricDefinition> = {
     source: "engine metrics: synthetic ground truth",
   },
   floorIou: {
-    id: "floorIou", label: "Floor IoU", unit: "0–1", kind: "simulation", better: "higher",
+    id: "floorIou", label: "Floor IoU", unit: "0-1", kind: "simulation", better: "higher",
     definition: "Intersection over union between floor-plane occupancy (max over z, thresholded) and the ground-truth body footprint grid.",
     source: "engine metrics: synthetic ground truth",
   },
   voxelIou: {
-    id: "voxelIou", label: "Voxel IoU", unit: "0–1", kind: "simulation", better: "higher",
+    id: "voxelIou", label: "Voxel IoU", unit: "0-1", kind: "simulation", better: "higher",
     definition: "3D intersection over union between thresholded occupancy voxels and ground-truth body voxels.",
     source: "engine metrics: synthetic ground truth",
   },
   precision: {
-    id: "precision", label: "Detection precision", unit: "0–1", kind: "simulation", better: "higher",
+    id: "precision", label: "Detection precision", unit: "0-1", kind: "simulation", better: "higher",
     definition: "Confirmed tracks within 0.75 m of a ground-truth subject divided by confirmed tracks.",
     source: "engine metrics: synthetic ground truth",
   },
   recall: {
-    id: "recall", label: "Detection recall", unit: "0–1", kind: "simulation", better: "higher",
+    id: "recall", label: "Detection recall", unit: "0-1", kind: "simulation", better: "higher",
     definition: "Ground-truth subjects with a confirmed track within 0.75 m divided by ground-truth subjects present.",
     source: "engine metrics: synthetic ground truth",
   },
@@ -111,7 +111,7 @@ export const METRICS: Record<string, MetricDefinition> = {
   },
   coverage: {
     id: "coverage", label: "Link coverage", unit: "ratio", kind: "reconstruction", better: "higher",
-    definition: "Fraction of floor cells (max over height) whose posterior variance ratio is below 0.8 — a geometry-only observability measure of the sensor layout.",
+    definition: "Fraction of floor cells (max over height) whose posterior variance ratio is below 0.8, a geometry-only observability measure of the sensor layout.",
     source: "rti-bayes posterior variance",
   },
   gpuUtilization: {

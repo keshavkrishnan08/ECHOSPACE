@@ -22,7 +22,7 @@ const EVENT_COLORS: Record<string, string> = {
 
 /**
  * Synchronised timeline. Scrubbing moves the global session cursor, which the 3D view, signal
- * plots, metrics and inspectors all read — so every view shows the same timestamp.
+ * plots, metrics and inspectors all read: so every view shows the same timestamp.
  */
 export function Timeline({ compact }: { compact?: boolean }) {
   const s = useSession();

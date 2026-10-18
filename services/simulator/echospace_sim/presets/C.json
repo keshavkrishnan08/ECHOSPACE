@@ -2,7 +2,7 @@
   "key": "C",
   "title": "Occlusion and wall attenuation",
   "objective": "Measure how an interior partition and its material change observability of a subject behind it.",
-  "lesson": "Attenuating obstacles remove information. Links crossing a dense partition carry little body-shadowing contrast, so the reconstruction behind it becomes uncertain — and may fail.",
+  "lesson": "Attenuating obstacles remove information. Links crossing a dense partition carry little body-shadowing contrast, so the reconstruction behind it becomes uncertain, and may fail.",
   "difficulty": "hard",
   "config": {
     "schemaVersion": 1,

@@ -72,7 +72,7 @@ export function TopBar() {
         <Button onClick={() => ui.setSave(true)} data-testid="save-experiment">
           <Save className="h-3.5 w-3.5" /> Save run
         </Button>
-        <Tip content={api.isSuccess ? `API ${api.data.version} connected` : "Python API not reachable — running fully in the browser with local storage"}>
+        <Tip content={api.isSuccess ? `API ${api.data.version} connected` : "Python API not reachable, running fully in the browser with local storage"}>
           <span className={`h-2 w-2 rounded-full ${api.isSuccess ? "bg-ok" : "bg-faint"}`} aria-label={api.isSuccess ? "API connected" : "API offline"} />
         </Tip>
         <Button variant="ghost" onClick={() => ui.setPalette(true)} aria-label="Open command palette">

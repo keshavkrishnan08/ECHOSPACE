@@ -46,7 +46,7 @@ export function Legend({ layers, colorBy, frame, compact }: { layers: LayerState
           {layers.groundTruth && frame?.groundTruth && <Row swatch={<Dash c="#f2f2f2" />} label="Synthetic ground truth (dashed)" />}
           <li className="pt-1 text-faint">
             Skeleton:{" "}
-            {frame?.capability.skeleton === "available" ? "inferred joints available" : "no model infers joints — only synthetic ground truth is drawn"}
+            {frame?.capability.skeleton === "available" ? "inferred joints available" : "no model infers joints, only synthetic ground truth is drawn"}
           </li>
         </ul>
       )}

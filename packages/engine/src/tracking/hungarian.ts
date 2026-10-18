@@ -1,5 +1,5 @@
 /**
- * Minimum-cost assignment (Hungarian / Kuhn–Munkres, O(n³)) on a rectangular cost matrix.
+ * Minimum-cost assignment (Hungarian / Kuhn-Munkres, O(n³)) on a rectangular cost matrix.
  * Returns assignment[row] = column or −1. Pairs with cost ≥ `maxCost` are left unassigned.
  */
 export function hungarian(cost: number[][], maxCost = Number.POSITIVE_INFINITY): number[] {

@@ -56,7 +56,7 @@ Environment variables (or a `.env` file in the working directory):
 | POST | `/api/sessions/{id}/start` | start the reference engine (synthetic sessions) |
 | POST | `/api/sessions/{id}/stop` | stop, close WebSockets, flush counters, events and metric series |
 | GET | `/api/sessions/{id}/metrics` | metric time series with their definitions |
-| GET | `/api/scenarios` | presets A–J with objective, lesson, difficulty and config |
+| GET | `/api/scenarios` | presets A-J with objective, lesson, difficulty and config |
 | POST | `/api/simulations` | create a synthetic session from a preset key or a config |
 | POST | `/api/simulations/{id}/restart` | restart from t = 0, optionally with a new seed |
 | GET | `/api/experiments` | experiment summaries; `?full=true` returns full records |

@@ -13,7 +13,7 @@ import { normCdf, spdInverse } from "./linalg";
  *
  * Posterior mean  x̂ = Π y,  Π = C Wᵀ (W C Wᵀ + σ_n² I)⁻¹  (computed in the L×L dual form)
  * Posterior variance ratio  r_i = (C_ii − [Π W C]_ii) / σ_x²   (1 = unconstrained / unobserved)
- * Null z-score  z_i = x̂_i / (σ_n ‖Π_i‖)   — the std-dev of x̂_i when y is pure noise.
+ * Null z-score  z_i = x̂_i / (σ_n ‖Π_i‖): the std-dev of x̂_i when y is pure noise.
  *
  * Reported occupancy = Φ(z_i − z₀) for constrained voxels and 0.5 ("unknown") where r_i > 0.95.
  * That is a detection confidence under the stated noise model, not a calibrated probability.

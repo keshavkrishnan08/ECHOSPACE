@@ -83,13 +83,13 @@ export function OverviewPage() {
               <dt className="text-muted">Model</dt>
               <dd className="num">{frame ? `${frame.provenance.modelId}@${frame.provenance.modelVersion}` : s.config.recon.modelId}</dd>
               <dt className="text-muted">Preprocessing</dt>
-              <dd className="num">{frame?.provenance.preprocessingVersion ?? "—"}</dd>
+              <dd className="num">{frame?.provenance.preprocessingVersion ?? "-"}</dd>
               <dt className="text-muted">Links</dt>
-              <dd className="num">{s.info ? `${s.info.links.length} (${s.config.sensors.length} nodes)` : "—"}</dd>
+              <dd className="num">{s.info ? `${s.info.links.length} (${s.config.sensors.length} nodes)` : "-"}</dd>
               <dt className="text-muted">Grid</dt>
-              <dd className="num">{s.info ? `${s.info.grid.nx}×${s.info.grid.ny}×${s.info.grid.nz} @ ${s.info.grid.voxelSizeM} m` : "—"}</dd>
+              <dd className="num">{s.info ? `${s.info.grid.nx}×${s.info.grid.ny}×${s.info.grid.nz} @ ${s.info.grid.voxelSizeM} m` : "-"}</dd>
               <dt className="text-muted">Config hash</dt>
-              <dd className="num">{frame?.provenance.configHash ?? "—"}</dd>
+              <dd className="num">{frame?.provenance.configHash ?? "-"}</dd>
               <dt className="text-muted">Stream time</dt>
               <dd className="num">{duration(s.simTime)}</dd>
             </dl>

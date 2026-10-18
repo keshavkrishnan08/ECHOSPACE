@@ -71,7 +71,7 @@ export function ArenaPage() {
   const exportSummary = () => {
     const sums = summarize(history.summaries);
     const md = [
-      `# ECHO simulation summary — scenario ${def.key}: ${def.title}`,
+      `# ECHO simulation summary, scenario ${def.key}: ${def.title}`,
       "",
       `> SIMULATION RESULTS. Computed against synthetic ground truth produced by the ECHO simulator (${SOFTWARE_VERSION}); not physical measurements.`,
       "",
@@ -89,7 +89,7 @@ export function ArenaPage() {
       ...history.events.slice(-40).map((e) => `- ${e.t.toFixed(2)} s · ${e.kind}: ${e.message}`),
     ].join("\n");
     downloadBlob(`echospace_summary_${def.key}_seed${s.config.seed}.md`, md, "text/markdown");
-    downloadBlob(`echospace_summary_${def.key}_seed${s.config.seed}.json`, JSON.stringify({ kind: "echospace.simulation-summary", label: "SIMULATION — synthetic ground truth", scenario: def.key, config: s.launchConfig, configChanges: s.configChanges, summaries: sums, filterQuality: fq, events: history.events.slice(-200) }, null, 2), "application/json");
+    downloadBlob(`echospace_summary_${def.key}_seed${s.config.seed}.json`, JSON.stringify({ kind: "echospace.simulation-summary", label: "SIMULATION, synthetic ground truth", scenario: def.key, config: s.launchConfig, configChanges: s.configChanges, summaries: sums, filterQuality: fq, events: history.events.slice(-200) }, null, 2), "application/json");
     toast("Exported Markdown + JSON summary", "ok");
   };
 

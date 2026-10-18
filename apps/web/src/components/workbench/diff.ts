@@ -12,5 +12,5 @@ export function diffPaths(a: unknown, b: unknown, path = ""): Array<{ path: stri
 
 export const short = (v: unknown) => {
   const s = typeof v === "string" ? v : JSON.stringify(v);
-  return s === undefined ? "—" : s.length > 60 ? `${s.slice(0, 57)}…` : s;
+  return s === undefined ? "-" : s.length > 60 ? `${s.slice(0, 57)}…` : s;
 };

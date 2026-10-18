@@ -1,7 +1,7 @@
 """Detection and multi-target tracking (port of tracking/{detect,tracker,hungarian}.ts).
 
 Assignment uses ``scipy.optimize.linear_sum_assignment`` in place of the hand-written
-Kuhn–Munkres solver. Both return a minimum-cost assignment; they can differ only when several
+Kuhn-Munkres solver. Both return a minimum-cost assignment; they can differ only when several
 assignments have exactly equal cost.
 """
 

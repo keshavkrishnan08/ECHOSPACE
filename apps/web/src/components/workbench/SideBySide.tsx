@@ -44,7 +44,7 @@ export function SideBySide() {
             <div className="num flex justify-between px-1 text-2xs text-muted">
               <span>pos. err {fmt(v.f?.metrics.positionErrorM, 2, "m")}</span>
               <span>floor IoU {fmt(v.f?.metrics.floorIou, 2)}</span>
-              <span>{v.f ? v.f.capability.modelStatus : v.note ? "—" : "computing… (catching up unpaced)"}</span>
+              <span>{v.f ? v.f.capability.modelStatus : v.note ? "-" : "computing… (catching up unpaced)"}</span>
             </div>
           </div>
         ))}

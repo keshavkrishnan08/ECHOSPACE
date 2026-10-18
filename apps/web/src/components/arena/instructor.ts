@@ -16,13 +16,13 @@ const set = (f: (d: ScenarioConfig) => void) => (c: ScenarioConfig) => {
 export const INSTRUCTOR: Partial<Record<ScenarioKey, InstructorStep[]>> = {
   A: [
     { text: "Nothing moves. Watch the confidence and observed-volume metrics: even an empty room only constrains the volume around link lines." },
-    { text: "Turn on the 'Unobserved' layer (Lab → Layers). Amber points mark voxels no link constrains — they are unknown, not empty." },
+    { text: "Turn on the 'Unobserved' layer (Lab → Layers). Amber points mark voxels no link constrains, they are unknown, not empty." },
     { text: "We lower SNR to 5 dB. Noise produces spurious occupancy blips; the tracker should mostly reject them (hits-to-confirm).", apply: set((d) => void (d.signal.snrDb = 5)) },
   ],
   B: [
     { text: "S1 walks along the south wall, turns, sits for 6 s, and returns. Compare the dashed ground truth with the violet track." },
     { text: "Open the Doppler spectrogram in the Studio while S1 walks: motion produces a spread of Doppler energy; it collapses when S1 sits." },
-    { text: "While seated, the subject is low and still. Shadowing contrast drops and the track may be lost — that is expected behaviour." },
+    { text: "While seated, the subject is low and still. Shadowing contrast drops and the track may be lost, that is expected behaviour." },
   ],
   C: [
     { text: "A brick partition splits the room. S1 walks behind it on the east side." },
@@ -36,7 +36,7 @@ export const INSTRUCTOR: Partial<Record<ScenarioKey, InstructorStep[]>> = {
   ],
   E: [
     { text: "Three subjects cross paths. Watch the identity-switch counter and event markers on the timeline." },
-    { text: "We widen the association gate to 2.5 m. Fewer fragmentations, more wrong associations — check the counters.", apply: set((d) => void (d.tracking.gateM = 2.5)) },
+    { text: "We widen the association gate to 2.5 m. Fewer fragmentations, more wrong associations, check the counters.", apply: set((d) => void (d.tracking.gateM = 2.5)) },
   ],
   F: [
     { text: "Start from the baseline. Enable 'Compare with baseline' to run the unmodified scenario side by side." },
@@ -55,6 +55,6 @@ export const INSTRUCTOR: Partial<Record<ScenarioKey, InstructorStep[]>> = {
   I: [{ text: "Pick a failure variant on the right. Each one must produce an explained failure state, never a fabricated reconstruction." }],
   J: [
     { text: "Coarse mode: 0.5 m voxels, no skeletons, no trails, zero track history." },
-    { text: "Toggle coarse mode off to see what extra detail standard mode would reveal — and decide whether the application needs it." },
+    { text: "Toggle coarse mode off to see what extra detail standard mode would reveal, and decide whether the application needs it." },
   ],
 };

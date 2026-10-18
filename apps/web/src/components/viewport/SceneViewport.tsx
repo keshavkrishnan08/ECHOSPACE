@@ -259,7 +259,7 @@ export function SceneViewport({ frame, config, info, variant = "full", className
       <div className="pointer-events-none absolute bottom-2 left-2 flex flex-col gap-1">
         {interactive && (
           <div className="num rounded bg-bg/80 px-1.5 py-0.5 text-2xs text-muted" data-testid="cursor-readout">
-            {cursor ? `x ${cursor[0].toFixed(2)}  y ${cursor[1].toFixed(2)}  z ${cursor[2].toFixed(2)} m` : "cursor: —"}
+            {cursor ? `x ${cursor[0].toFixed(2)}  y ${cursor[1].toFixed(2)}  z ${cursor[2].toFixed(2)} m` : "cursor:"}
           </div>
         )}
         {frame && (

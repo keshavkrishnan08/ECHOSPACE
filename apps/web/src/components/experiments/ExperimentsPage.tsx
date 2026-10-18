@@ -23,7 +23,7 @@ import { cn } from "@/lib/format";
 
 export function reportMarkdown(r: ExperimentRecord): string {
   return [
-    `# Experiment report — ${r.name}`,
+    `# Experiment report, ${r.name}`,
     "",
     r.sourceMode === "synthetic" ? "> SIMULATION: all metrics are computed against synthetic ground truth from the ECHO simulator. They are not physical measurements." : `> Source: ${r.sourceMode}. Simulation metrics are unavailable without ground truth.`,
     "",
@@ -36,7 +36,7 @@ export function reportMarkdown(r: ExperimentRecord): string {
     `| preprocessing | ${r.preprocessingVersion} |`,
     `| engine / device | ${r.engine} / ${r.inferenceDevice} |`,
     `| software | ${r.softwareVersion} |`,
-    `| started / ended | ${r.startedAt} / ${r.endedAt ?? "—"} |`,
+    `| started / ended | ${r.startedAt} / ${r.endedAt ?? "-"} |`,
     `| stream time / frames | ${r.simulatedDurationS.toFixed(1)} s / ${r.frames} |`,
     `| mid-run changes | ${r.configChanges.length} |`,
     `| replay digest (${r.replayDigestFrames} frames) | ${r.replayDigest ?? "not available"} |`,
@@ -49,7 +49,7 @@ export function reportMarkdown(r: ExperimentRecord): string {
     ...r.summaries.map((m) => `| ${METRICS[m.id]?.label ?? m.id} | ${METRICS[m.id]?.unit ?? ""} | ${m.n} | ${fmt(m.median, 3)} | ${m.p95 === null ? "n<20" : fmt(m.p95, 3)} | ${fmt(m.mean, 3)} | ${fmt(m.min, 3)} | ${fmt(m.max, 3)} |`),
     "",
     "## Metric definitions",
-    ...r.summaries.map((m) => `- **${METRICS[m.id]?.label ?? m.id}** — ${METRICS[m.id]?.definition ?? "n/a"}`),
+    ...r.summaries.map((m) => `- **${METRICS[m.id]?.label ?? m.id}** ${METRICS[m.id]?.definition ?? "n/a"}`),
     "",
     "## Notes",
     r.notes || "_none_",
@@ -65,7 +65,7 @@ function ReplayBadge({ id }: { id: string }) {
   if (r.status === "running") return <Badge tone="signal">Replaying… verifying first 40 frames</Badge>;
   if (r.status === "verified") return <Badge tone="ok"><CheckCircle2 className="h-3 w-3" /> Replay reproduced (digest match)</Badge>;
   if (r.status === "mismatch") return <Badge tone="err"><XCircle className="h-3 w-3" /> Replay digest mismatch</Badge>;
-  if (r.status === "unverifiable") return <Badge tone="warn">Replayed — no stored digest to verify</Badge>;
+  if (r.status === "unverifiable") return <Badge tone="warn">Replayed, no stored digest to verify</Badge>;
   return null;
 }
 
@@ -100,7 +100,7 @@ export function ExperimentsPage() {
           <h1 className="text-sm font-semibold">Experiments</h1>
           <Button size="sm" disabled={checked.length < 2} onClick={() => router.push(`/workbench?compare=${checked.join(",")}`)} data-testid="compare-selected">Compare {checked.length || ""}</Button>
         </div>
-        {exps.data?.apiError && <p className="border-b border-line-soft px-3 py-1.5 text-2xs text-faint">API offline — showing experiments stored in this browser.</p>}
+        {exps.data?.apiError && <p className="border-b border-line-soft px-3 py-1.5 text-2xs text-faint">API offline, showing experiments stored in this browser.</p>}
         <div className="min-h-0 flex-1 overflow-y-auto">
           {exps.isLoading ? <LoadingState /> : !items.length ? (
             <EmptyState title="No experiments yet">Run a scenario and press Save run (S).</EmptyState>

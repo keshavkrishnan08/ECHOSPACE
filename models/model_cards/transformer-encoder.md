@@ -1,9 +1,9 @@
-# Model card: `transformer-encoder` — Transformer encoder (interface slot)
+# Model card: `transformer-encoder`: Transformer encoder (interface slot)
 
 | field | value |
 | --- | --- |
 | family | transformer |
-| version | — |
+| version | - |
 | status | **unavailable** |
 | preprocessing | pp-1.0.0 (intended) |
 
@@ -15,7 +15,7 @@ this build. Nothing is substituted for it.
 
 ## Why it might be justified
 
-A transformer over (link, time) tokens could learn link-geometry-aware attention and handle a variable set of links, which in principle would allow transfer across rooms and node layouts — the main limitation of ridge-floor, which is tied to one geometry. That is the only reason to consider a model of this size here.
+A transformer over (link, time) tokens could learn link-geometry-aware attention and handle a variable set of links, which in principle would allow transfer across rooms and node layouts, the main limitation of ridge-floor, which is tied to one geometry. That is the only reason to consider a model of this size here.
 
 ## What data would be needed
 

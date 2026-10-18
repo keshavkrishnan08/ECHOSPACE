@@ -17,7 +17,7 @@ def spd_inverse(a: npt.ArrayLike) -> npt.NDArray[np.float64]:
 
 
 def norm_cdf(x: npt.ArrayLike) -> npt.NDArray[np.float64]:
-    """Standard normal CDF via the Abramowitz–Stegun 7.1.26 erf approximation (|err| < 1.5e-7).
+    """Standard normal CDF via the Abramowitz-Stegun 7.1.26 erf approximation (|err| < 1.5e-7).
 
     Deliberately not ``scipy.special.ndtr``: the TypeScript engine reports occupancy through this
     approximation, and the reference must reproduce it to well below the approximation error.

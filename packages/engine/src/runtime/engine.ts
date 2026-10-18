@@ -38,7 +38,7 @@ function sceneKey(c: ScenarioConfig) {
  * Orchestrates source → bounded acquisition queue → pipeline. The caller drives time with
  * `advance(dtSim, budgetMs)`. If processing cannot keep up, the acquisition queue fills and drops
  * packets according to the configured policy, and frame slots that cannot be processed in time
- * are skipped and counted — nothing grows without bound.
+ * are skipped and counted: nothing grows without bound.
  */
 export class EchoEngine {
   config: ScenarioConfig;
@@ -89,7 +89,7 @@ export class EchoEngine {
    * Applies a new configuration at the next frame boundary, rebuilding only what the change
    * requires. When the channel changes, packets already pulled from the old source are discarded
    * and generation resumes right after the last processed frame, so the result depends only on
-   * (launch config, frame index of each change) — not on UI timing. Returns the frame index.
+   * (launch config, frame index of each change): not on UI timing. Returns the frame index.
    */
   reconfigure(next: ScenarioConfig): number {
     const prev = this.config;
@@ -193,7 +193,7 @@ export class EchoEngine {
       if (this.source.propagationPaths && this.pipeline.selectedLink < this.source.descriptor.links.length) {
         frame.propagation = this.source.propagationPaths(this.nextFrameT, this.pipeline.selectedLink);
       }
-      if (this.calibrationStale) frame.warnings.push("Scene geometry or materials changed since calibration. The empty-room baseline is stale — recalibrate to remove artefacts.");
+      if (this.calibrationStale) frame.warnings.push("Scene geometry or materials changed since calibration. The empty-room baseline is stale, recalibrate to remove artefacts.");
       frames.push(frame);
       this.framesProduced++;
       this.nextFrameT += period;

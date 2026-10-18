@@ -31,7 +31,7 @@ export function Metric({ id, value, sub, tone, className, label, demo }: { id: s
           </div>
           <div>{def.definition}</div>
           <div className="text-muted">Source: {def.source}</div>
-          {def.kind === "simulation" && <div className="text-warn">Simulation metric — computed against synthetic ground truth.</div>}
+          {def.kind === "simulation" && <div className="text-warn">Simulation metric, computed against synthetic ground truth.</div>}
         </div>
       }
     >

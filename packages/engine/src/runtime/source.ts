@@ -72,7 +72,7 @@ export class SyntheticSource implements PacketSource {
       geometryKnown: true,
       hasGroundTruth: true,
       timestampSource: "simulated receiver clock with configurable jitter",
-      notes: ["Simplified analytic multipath model — see docs/simulation-model.md"],
+      notes: ["Simplified analytic multipath model, see docs/simulation-model.md"],
       antennaPositions: this.sim.links.map((l) => this.sim.antennaPositions(l.index)),
     };
   }

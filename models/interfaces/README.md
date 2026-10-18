@@ -22,7 +22,7 @@ Models consume the output of the shared preprocessing chain, versioned as
 5. the empty-room background (mean sanitized CSI per link) for coherent models.
 
 A link with no packets in a frame has `NaN` features. Each model card's `inputSchema` states which
-of these it reads. Changing any of steps 1–4 changes the feature distribution and requires a new
+of these it reads. Changing any of steps 1-4 changes the feature distribution and requires a new
 `preprocessingVersion`; learned weights record the version they were trained with and must be
 retrained (or at least re-evaluated) when it changes.
 

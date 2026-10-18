@@ -82,7 +82,7 @@ inconsistent sizes. The C functions return `ES_OK` (0) or a negative `es_status`
 | Normal CDF (A&S 7.1.26) | `norm_cdf` | `es_norm_cdf` | `normCdf` (linalg.ts) |
 | RTI posterior apply | `rti_apply`, `rti_apply_batch` | `es_rti_apply[_batch]` | `RtiModel.reconstruct` (rti.ts) |
 | Delay-and-sum back-projection | `backprojection` | `es_backprojection` | `BackProjectionModel.image` |
-| SPSC ring buffer | `echospace::SpscRing<T>` (header-only) | – | `BoundedQueue` (queue.ts) |
+| SPSC ring buffer | `echospace::SpscRing<T>` (header-only) | - | `BoundedQueue` (queue.ts) |
 
 Python: `engine/python/echospace_native` mirrors the C ABI with NumPy arrays in and out:
 `hann`, `fft`, `fft_batch`, `doppler_spectrum[_batch]`, `sanitize_packets`, `hampel`,
@@ -236,7 +236,7 @@ Native throughput at the median:
 
 How to read the results:
 
-- **Noise.** The host is noisy. p95 is often 1.5–2× the median, and medians move between runs.
+- **Noise.** The host is noisy. p95 is often 1.5-2× the median, and medians move between runs.
   In an earlier run minutes before (before the RTI change, same FFT code), fft_64_batch had a
   native median of 650 µs instead of 946 µs. Ratios below about 1.5× should not be treated as
   significant.

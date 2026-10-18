@@ -182,7 +182,7 @@ function StageSample({ id, frame, stats }: { id: StageId; frame: ReconstructionF
         hi = Math.max(hi, m);
       }
     sample = (
-      <PlotFrame title={id === "spatial" ? "Output: posterior image (max over height)" : "Output: occupancy (max over height)"} kind="derived" units={id === "spatial" ? "model units (dB attenuation density)" : "detection confidence 0–1"}>
+      <PlotFrame title={id === "spatial" ? "Output: posterior image (max over height)" : "Output: occupancy (max over height)"} kind="derived" units={id === "spatial" ? "model units (dB attenuation density)" : "detection confidence 0-1"}>
         <EChart option={{ grid: { left: 40, right: 60, top: 8, bottom: 28 }, tooltip: { ...tooltipStyle }, xAxis: { type: "category", data: Array.from({ length: nx }, (_, i) => ((i + 0.5) * (cfg.room.width / nx)).toFixed(1)), ...axisStyle, splitLine: { show: false } }, yAxis: { type: "category", data: Array.from({ length: ny }, (_, j) => ((j + 0.5) * (cfg.room.depth / ny)).toFixed(1)), ...axisStyle, splitLine: { show: false } }, visualMap: { min: 0, max: id === "spatial" ? hi : 1, right: 0, top: 8, itemHeight: 120, calculable: true, textStyle: { color: "#8b9ab0", fontSize: 9 }, inRange: { color: ["#080b12", "#22325a", "#3f6fd8", "#8fc2ff"] } }, series: [{ type: "heatmap", data }] }} height={240} />
       </PlotFrame>
     );

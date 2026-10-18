@@ -11,13 +11,13 @@ test("signal-to-space acceptance flow", async ({ page }) => {
   test.setTimeout(420_000);
   const errors = trackPageErrors(page);
 
-  // 1–2. Launch the application; a synthetic session starts automatically.
+  // 1-2. Launch the application; a synthetic session starts automatically.
   await page.goto("/overview");
   await expect(page.getByTestId("source-badge").first()).toContainText(/synthetic simulation/i);
   await page.getByTestId("launch-lab").click();
   await expect(page).toHaveURL(/\/lab/);
 
-  // 3–4. The 3D reconstruction updates.
+  // 3-4. The 3D reconstruction updates.
   await expect(page.getByTestId("viewport")).toBeVisible();
   await waitForFrames(page, 15);
   const f1 = await frameNumber(page);
@@ -32,7 +32,7 @@ test("signal-to-space acceptance flow", async ({ page }) => {
   await page.getByTestId("signal-spectrogram").click();
   await expect(page.getByTestId("plot-spectrogram").locator("canvas").first()).toBeVisible();
 
-  // 6–7. Change a simulation parameter and observe the effect on input quality.
+  // 6-7. Change a simulation parameter and observe the effect on input quality.
   await page.goto("/arena?s=F");
   await waitForFrames(page, 30);
   const readQuality = async () => Number.parseFloat((await page.getByTestId("arena-metrics").getByText("Input quality").locator("xpath=..").locator("xpath=..").locator(".num").first().textContent()) ?? "NaN");

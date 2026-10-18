@@ -3,7 +3,7 @@
  *
  * The Python reference simulator (services/simulator/echospace_sim/rng.py) implements the exact
  * same integer arithmetic so both engines produce identical random streams for a given seed.
- * Floats are derived as u32 / 2^32, normals with Box–Muller consuming two uniforms per sample.
+ * Floats are derived as u32 / 2^32, normals with Box-Muller consuming two uniforms per sample.
  */
 
 export function splitmix32(state: number): [value: number, next: number] {
@@ -75,7 +75,7 @@ export class Rng {
     return this.nextU32() / 4294967296;
   }
 
-  /** Standard normal via Box–Muller (cosine branch only, two uniforms per call). */
+  /** Standard normal via Box-Muller (cosine branch only, two uniforms per call). */
   normal(): number {
     const u1 = 1 - this.uniform();
     const u2 = this.uniform();

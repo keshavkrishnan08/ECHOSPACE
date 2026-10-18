@@ -80,7 +80,7 @@ export function Inspector({ frame }: { frame: ReconstructionFrame | null }) {
             <KV k="Timestamp" v={`${f.timestampS.toFixed(3)} s`} />
             <KV k="Source frame" v={f.seq} />
             <KV k="Model output" v={`${f.provenance.modelId}@${f.provenance.modelVersion}`} />
-            <KV k="Velocity" v={near ? `${Math.hypot(near.velocity[0], near.velocity[1]).toFixed(2)} m/s (track ${near.id})` : "N/A — no confirmed track within 0.6 m"} />
+            <KV k="Velocity" v={near ? `${Math.hypot(near.velocity[0], near.velocity[1]).toFixed(2)} m/s (track ${near.id})` : "N/A, no confirmed track within 0.6 m"} />
             <KV k="Provenance" v={`derived · ${f.provenance.sourceMode}${synthetic ? " (simulated input)" : ""}`} mono={false} />
           </dl>
           <p className="mt-1.5 text-2xs text-faint">Points are sampled uniformly inside voxels whose value passes the thresholds; their exact position within a voxel carries no information.</p>
@@ -111,7 +111,7 @@ export function Inspector({ frame }: { frame: ReconstructionFrame | null }) {
         <p className="mt-1.5 text-2xs text-muted">{st.note}</p>
         <div className="mt-2 text-2xs uppercase tracking-wider text-muted">Contributing observations ({contrib.length} links)</div>
         <ul className="num mt-1 max-h-32 space-y-0.5 overflow-y-auto text-2xs">
-          {contrib.length === 0 && <li className="text-faint">none — outside every link ellipsoid (λ_e = {cfg.recon.ellipseExcessM} m)</li>}
+          {contrib.length === 0 && <li className="text-faint">none, outside every link ellipsoid (λ_e = {cfg.recon.ellipseExcessM} m)</li>}
           {contrib.map((c) => {
             const li = info?.links.find((l) => l.id === c.id || l.id === c.id.split(">").reverse().join(">"));
             const d = li ? f.features.deltaRssDb[li.index] : Number.NaN;
@@ -170,7 +170,7 @@ export function Inspector({ frame }: { frame: ReconstructionFrame | null }) {
         <div className="mt-2 text-2xs uppercase tracking-wider text-muted">Confidence distribution (filtered)</div>
         <div className="mt-1 flex h-12 items-end gap-0.5" role="img" aria-label="Confidence histogram">
           {filt.bins.map((b, i) => (
-            <div key={i} className="flex-1 rounded-t-sm bg-ok/70" style={{ height: `${(b / maxBin) * 100}%` }} title={`${(i / 10).toFixed(1)}–${((i + 1) / 10).toFixed(1)}: ${b}`} />
+            <div key={i} className="flex-1 rounded-t-sm bg-ok/70" style={{ height: `${(b / maxBin) * 100}%` }} title={`${(i / 10).toFixed(1)}-${((i + 1) / 10).toFixed(1)}: ${b}`} />
           ))}
         </div>
         <div className="num flex justify-between text-[9px] text-faint"><span>0</span><span>1</span></div>

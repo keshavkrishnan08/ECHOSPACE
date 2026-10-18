@@ -97,7 +97,7 @@ METRICS: dict[str, MetricDefinition] = {
     "inputQuality": _m(
         "inputQuality",
         "Input quality",
-        "0–1",
+        "0\u20131",
         "signal",
         "higher",
         "Product of delivery ratio and a logistic SNR factor σ((SNR−10 dB)/3 dB). A documented heuristic, not a standard metric.",
@@ -106,7 +106,7 @@ METRICS: dict[str, MetricDefinition] = {
     "meanConfidence": _m(
         "meanConfidence",
         "Reconstruction confidence",
-        "0–1",
+        "0\u20131",
         "reconstruction",
         "higher",
         "Mean of (1 − posterior variance ratio) over voxels inside the room. Measures how constrained the image is by the links, not whether it is correct.",
@@ -142,7 +142,7 @@ METRICS: dict[str, MetricDefinition] = {
     "floorIou": _m(
         "floorIou",
         "Floor IoU",
-        "0–1",
+        "0\u20131",
         "simulation",
         "higher",
         "Intersection over union between floor-plane occupancy (max over z, thresholded) and the ground-truth body footprint grid.",
@@ -151,7 +151,7 @@ METRICS: dict[str, MetricDefinition] = {
     "voxelIou": _m(
         "voxelIou",
         "Voxel IoU",
-        "0–1",
+        "0\u20131",
         "simulation",
         "higher",
         "3D intersection over union between thresholded occupancy voxels and ground-truth body voxels.",
@@ -160,7 +160,7 @@ METRICS: dict[str, MetricDefinition] = {
     "precision": _m(
         "precision",
         "Detection precision",
-        "0–1",
+        "0\u20131",
         "simulation",
         "higher",
         "Confirmed tracks within 0.75 m of a ground-truth subject divided by confirmed tracks.",
@@ -169,7 +169,7 @@ METRICS: dict[str, MetricDefinition] = {
     "recall": _m(
         "recall",
         "Detection recall",
-        "0–1",
+        "0\u20131",
         "simulation",
         "higher",
         "Ground-truth subjects with a confirmed track within 0.75 m divided by ground-truth subjects present.",
@@ -217,7 +217,7 @@ METRICS: dict[str, MetricDefinition] = {
         "ratio",
         "reconstruction",
         "higher",
-        "Fraction of floor cells (max over height) whose posterior variance ratio is below 0.8 — a geometry-only observability measure of the sensor layout.",
+        "Fraction of floor cells (max over height) whose posterior variance ratio is below 0.8, a geometry-only observability measure of the sensor layout.",
         "rti-bayes posterior variance",
     ),
     "gpuUtilization": _m(

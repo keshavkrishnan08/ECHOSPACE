@@ -233,7 +233,7 @@ export const SCENARIOS: ScenarioDefinition[] = [
     key: "C",
     title: "Occlusion and wall attenuation",
     objective: "Measure how an interior partition and its material change observability of a subject behind it.",
-    lesson: "Attenuating obstacles remove information. Links crossing a dense partition carry little body-shadowing contrast, so the reconstruction behind it becomes uncertain — and may fail.",
+    lesson: "Attenuating obstacles remove information. Links crossing a dense partition carry little body-shadowing contrast, so the reconstruction behind it becomes uncertain, and may fail.",
     difficulty: "hard",
     build: (seed = 21) => baseConfig({
       scenario: "C", name: "Occlusion and wall attenuation", seed,
@@ -391,7 +391,7 @@ export const SCENARIOS: ScenarioDefinition[] = [
         apply: (c) => upd(c, (d) => { d.room.width = 9; d.room.depth = 4; d.sensors = perimeterSensors(8, 9, 4); d.obstacles = []; d.recon.modelId = "ridge-floor"; d.subjects = d.subjects.map((s) => clampSubject(s, 9, 4)); }) },
       { id: "channels", label: "Missing sensor channels", description: "Two receivers lose antennas (NaN samples).",
         apply: (c) => upd(c, (d) => void (d.impairments.missingAntennas = [{ sensorId: "N2", antenna: 0 }, { sensorId: "N2", antenna: 1 }, { sensorId: "N2", antenna: 2 }, { sensorId: "N5", antenna: 1 }])) },
-      { id: "shift", label: "Distribution shift", description: "Learned model with metal walls and 5 dB SNR — far from its training distribution.",
+      { id: "shift", label: "Distribution shift", description: "Learned model with metal walls and 5 dB SNR, far from its training distribution.",
         apply: (c) => upd(c, (d) => { d.recon.modelId = "ridge-floor"; d.room.wallMaterial = "metal"; d.room.wallReflectivity = 0.9; d.signal.snrDb = 5; }) },
       { id: "lowconf", label: "Low confidence", description: "Heavy noise and loss: confidence collapses and outputs are suppressed.",
         apply: (c) => upd(c, (d) => { d.signal.snrDb = -3; d.impairments.packetLoss = 0.6; }) },

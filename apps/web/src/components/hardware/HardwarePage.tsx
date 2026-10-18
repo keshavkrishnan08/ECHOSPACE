@@ -66,11 +66,11 @@ export function HardwarePage() {
     { label: "Secure context", state: !hydrated ? "pending" : secure ? "pass" : "fail", detail: "Web Serial requires https:// or localhost." },
     { label: "Operator authorisation and consent recorded", state: authorized && consent ? "pass" : "pending", detail: "Required before connecting. Covert deployment is not supported." },
     { label: "Device connected", state: st?.connected ? "pass" : "pending", detail: st?.connected ? `USB ${JSON.stringify(adapter.current?.deviceInfo ?? {})}` : "Not connected." },
-    { label: "Firmware emits CSI_DATA rows", state: !st?.connected ? "pending" : st.csiRows > 0 ? "pass" : st.lines > 50 ? "fail" : "pending", detail: st ? `${st.csiRows} CSI rows of ${st.lines} lines; ${st.malformed} malformed` : "—" },
-    { label: "Stable subcarrier count", state: st?.subcarriers ? "pass" : "pending", detail: st?.subcarriers ? `${st.subcarriers} subcarriers; rows with other counts are rejected` : "—" },
-    { label: "Monotonic device timestamps", state: !st?.csiRows ? "pending" : st.nonMonotonic === 0 ? "pass" : "warn", detail: st ? `${st.nonMonotonic} non-monotonic timestamps` : "—" },
-    { label: "Packet rate ≥ 20 Hz", state: st?.ratesHz === null || st?.ratesHz === undefined ? "pending" : st.ratesHz >= 20 ? "pass" : "warn", detail: st?.ratesHz ? `${st.ratesHz.toFixed(1)} rows/s over the last 2 s` : "—" },
-    { label: "Single transmitter link", state: !st?.csiRows ? "pending" : st.ignoredMacs ? "warn" : "pass", detail: st?.mac ? `using ${st.mac}; ${st.ignoredMacs} rows from other MACs ignored` : "—" },
+    { label: "Firmware emits CSI_DATA rows", state: !st?.connected ? "pending" : st.csiRows > 0 ? "pass" : st.lines > 50 ? "fail" : "pending", detail: st ? `${st.csiRows} CSI rows of ${st.lines} lines; ${st.malformed} malformed` : "-" },
+    { label: "Stable subcarrier count", state: st?.subcarriers ? "pass" : "pending", detail: st?.subcarriers ? `${st.subcarriers} subcarriers; rows with other counts are rejected` : "-" },
+    { label: "Monotonic device timestamps", state: !st?.csiRows ? "pending" : st.nonMonotonic === 0 ? "pass" : "warn", detail: st ? `${st.nonMonotonic} non-monotonic timestamps` : "-" },
+    { label: "Packet rate ≥ 20 Hz", state: st?.ratesHz === null || st?.ratesHz === undefined ? "pending" : st.ratesHz >= 20 ? "pass" : "warn", detail: st?.ratesHz ? `${st.ratesHz.toFixed(1)} rows/s over the last 2 s` : "-" },
+    { label: "Single transmitter link", state: !st?.csiRows ? "pending" : st.ignoredMacs ? "warn" : "pass", detail: st?.mac ? `using ${st.mac}; ${st.ignoredMacs} rows from other MACs ignored` : "-" },
     { label: "Sensor geometry declared", state: "warn", detail: "This adapter has no geometry: spatial imaging is unavailable. Signal Studio diagnostics work." },
     { label: "Multi-antenna phase coherence", state: "warn", detail: "ESP32 reports one antenna: inter-antenna phase features are unavailable." },
   ];
@@ -106,11 +106,11 @@ export function HardwarePage() {
               <dt className="text-muted">Adapter</dt><dd>esp32-serial</dd>
               <dt className="text-muted">Status</dt><dd>{st?.connected ? <Badge tone="ok" dot>connected</Badge> : <Badge>disconnected</Badge>}</dd>
               <dt className="text-muted">Supported format</dt><dd>CSI_DATA rows, int8 (imag, real) pairs, 1 antenna</dd>
-              <dt className="text-muted">Device</dt><dd className="num">{st?.connected ? JSON.stringify(adapter.current?.deviceInfo) : "—"}</dd>
-              <dt className="text-muted">Channel</dt><dd className="num">{st?.channel ?? "—"}</dd>
-              <dt className="text-muted">Data health</dt><dd className="num">{st ? `${st.csiRows} rows · ${st.malformed} malformed · ${fmt(st.ratesHz, 1, "Hz")}` : "—"}</dd>
+              <dt className="text-muted">Device</dt><dd className="num">{st?.connected ? JSON.stringify(adapter.current?.deviceInfo) : "-"}</dd>
+              <dt className="text-muted">Channel</dt><dd className="num">{st?.channel ?? "-"}</dd>
+              <dt className="text-muted">Data health</dt><dd className="num">{st ? `${st.csiRows} rows · ${st.malformed} malformed · ${fmt(st.ratesHz, 1, "Hz")}` : "-"}</dd>
               <dt className="text-muted">Last sample</dt><dd className="num">{st?.lastRowAtMs ? `${((Date.now() - st.lastRowAtMs) / 1000).toFixed(1)} s ago${fresh ? "" : " (stale)"}` : "never"}</dd>
-              <dt className="text-muted">Timestamp quality</dt><dd className="num">{st?.csiRows ? (st.nonMonotonic ? `${st.nonMonotonic} non-monotonic` : "monotonic") : "—"}</dd>
+              <dt className="text-muted">Timestamp quality</dt><dd className="num">{st?.csiRows ? (st.nonMonotonic ? `${st.nonMonotonic} non-monotonic` : "monotonic") : "-"}</dd>
             </dl>
             <SelectField label="Baud rate" value={baud} options={["115200", "230400", "460800", "921600", "1152000"].map((b) => ({ value: b, label: b }))} onChange={setBaud} disabled={st?.connected} />
             <Toggle label="I am authorised to operate this sensor here" checked={authorized} onChange={setAuthorized} />
@@ -135,7 +135,7 @@ export function HardwarePage() {
             <Toggle label="Allow raw-data recording (opt-in, off by default)" checked={optIn} onChange={(v) => setSetting("recordingsOptIn", v)} />
             <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5">
               <dt className="text-muted">Source status</dt><dd>{st?.connected ? "connected" : "no live source"}</dd>
-              <dt className="text-muted">Duration</dt><dd className="num">{recStart ? `${recDur.toFixed(0)} s` : "—"}</dd>
+              <dt className="text-muted">Duration</dt><dd className="num">{recStart ? `${recDur.toFixed(0)} s` : "-"}</dd>
               <dt className="text-muted">Data volume (est.)</dt><dd className="num">{est ? `${(est / 1024).toFixed(1)} KiB/s ≈ ${((est * 3600) / 1048576).toFixed(0)} MiB/h` : "unknown until data arrives"}</dd>
               <dt className="text-muted">Recorded</dt><dd className="num">{adapter.current?.recording ? `${adapter.current.recording.length} rows, ${(adapter.current.recordingBytes / 1048576).toFixed(2)} MiB (cap 50 MiB)` : "not recording"}</dd>
               <dt className="text-muted">Browser storage</dt><dd className="num">{storage ? `${(storage.usage / 1048576).toFixed(1)} MiB used of ${(storage.quota / 1073741824).toFixed(1)} GiB quota` : "unavailable"}</dd>

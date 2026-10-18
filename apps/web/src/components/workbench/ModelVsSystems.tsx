@@ -20,7 +20,7 @@ export function ModelVsSystems() {
   const A = results.a;
   const B = results.b;
   const row = (label: string, fa: (r: NonNullable<typeof A>) => number | null, digits = 3) => (
-    <tr className="border-t border-line-soft"><td className="py-0.5 text-left text-muted">{label}</td><td className="text-center">{A ? fmt(fa(A), digits) : "—"}</td><td className="text-center">{B ? fmt(fa(B), digits) : "—"}</td></tr>
+    <tr className="border-t border-line-soft"><td className="py-0.5 text-left text-muted">{label}</td><td className="text-center">{A ? fmt(fa(A), digits) : "-"}</td><td className="text-center">{B ? fmt(fa(B), digits) : "-"}</td></tr>
   );
   const usable = MODEL_OPTIONS.filter((o) => o.value === "rti-bayes" || o.value === "bp-dsb" || o.value === "ridge-floor");
   return (

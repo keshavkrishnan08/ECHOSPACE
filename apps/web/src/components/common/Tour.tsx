@@ -25,7 +25,7 @@ export const TOUR: TourStep[] = [
   {
     act: "Act 1 · The room",
     title: "A room, two kinds of truth",
-    body: "Eight transceivers line the walls. A synthetic subject walks a scripted path — drawn as dashed white ground truth. The badge in the top bar reads SYNTHETIC SIMULATION: nothing here is a physical measurement.",
+    body: "Eight transceivers line the walls. A synthetic subject walks a scripted path, drawn as dashed white ground truth. The badge in the top bar reads SYNTHETIC SIMULATION: nothing here is a physical measurement.",
     path: "/lab",
     enter: () => {
       const s = useSession.getState();
@@ -67,7 +67,7 @@ export const TOUR: TourStep[] = [
   {
     act: "Act 5 · The failure",
     title: "Degrade the signal",
-    body: "We have lowered SNR to 3 dB and set 40 % packet loss. Input quality drops, confidence falls and position error rises — the model is not allowed to hold on to a good answer. Try the controls yourself.",
+    body: "We have lowered SNR to 3 dB and set 40 % packet loss. Input quality drops, confidence falls and position error rises, the model is not allowed to hold on to a good answer. Try the controls yourself.",
     path: "/lab",
     enter: () => {
       const s = useSession.getState();

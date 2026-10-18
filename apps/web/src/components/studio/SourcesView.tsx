@@ -33,7 +33,7 @@ export function SourcesView() {
         ["Subcarriers", String(d.subcarriers)],
         ["Centre frequency", d.centerFreqHz ? `${(d.centerFreqHz / 1e9).toFixed(3)} GHz` : "unknown"],
         ["Packet rate", d.packetRateHz ? `${d.packetRateHz.toFixed(1)} Hz` : "unknown"],
-        ["Geometry known", d.geometryKnown ? "yes" : "no — imaging unavailable"],
+        ["Geometry known", d.geometryKnown ? "yes" : "no, imaging unavailable"],
         ["Ground truth", d.hasGroundTruth ? "synthetic ground truth available" : "none"],
         ["Timestamps", d.timestampSource],
       ]

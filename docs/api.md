@@ -163,7 +163,7 @@ packet synthesis is excluded (it is reported as `stepMs` in `timing` messages).
 ### `POST /api/simulations`
 
 Creates a synthetic session for the Python reference engine. Give exactly one of `scenario`
-(preset key `A`–`J`) or `config`; `seed` overrides the configuration's seed.
+(preset key `A`-`J`) or `config`; `seed` overrides the configuration's seed.
 
 ```json
 { "scenario": "B", "seed": 42, "pace": "realtime", "projectId": "default" }
@@ -284,7 +284,7 @@ connection; gaps mean messages were dropped by backpressure or addressed to anot
 
 | type | payload |
 | --- | --- |
-| `status` | `{ "state": "streaming", "message": "" }` — sent on connect and on every state change |
+| `status` | `{ "state": "streaming", "message": "" }`: sent on connect and on every state change |
 | `frame` | `FramePayload`, below |
 | `metrics` | `{ "seq": 41, "timestampS": 4.2, "values": { "processingMs": 60.1, "inputQuality": 0.99, "floorIou": 0.33, "positionErrorM": 0.21, "...": null } }` |
 | `timing` | per connection: `{ "framesProduced": 120, "messagesSent": 240, "queueDepth": 0, "queueCapacity": 32, "dropped": 0, "superseded": 0, "ackedSeq": 236, "lastSeq": 241, "processingMs": 60.1, "stepMs": 251.0, "paused": false }` |

@@ -14,7 +14,7 @@ export function ModelsPage() {
     queryKey: ["registry"],
     queryFn: async () => {
       const r = await fetch("/models/registry.json", { cache: "no-store" });
-      if (!r.ok) throw new Error(`registry not found (${r.status}) — run node scripts/sync-models.mjs`);
+      if (!r.ok) throw new Error(`registry not found (${r.status}), run node scripts/sync-models.mjs`);
       return (await r.json() as unknown[]).map((x) => ModelCard.parse(x));
     },
   });

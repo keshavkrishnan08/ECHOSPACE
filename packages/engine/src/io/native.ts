@@ -6,7 +6,7 @@ import { dist } from "../sim/geometry";
 /**
  * echospace-csi-v1: a line-delimited JSON recording format.
  *   line 1: header {format, centerFreqHz, subcarrierOffsetsHz, packetRateHz?, links[], room?, device?, consent, notes?}
- *   lines : {link, seq, t (seconds, or null), re: number[], im: number[]}  — [antenna*K + k]
+ *   lines : {link, seq, t (seconds, or null), re: number[], im: number[]}, [antenna*K + k]
  * Geometry (tx/rx positions and room) is optional; without it the recording can be inspected
  * in the Signal Studio but not imaged.
  */

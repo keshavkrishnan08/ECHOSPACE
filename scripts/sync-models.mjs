@@ -11,7 +11,7 @@ const pub = join(root, "apps/web/public");
 function copy(src, dst) {
   const from = join(root, src);
   if (!existsSync(from)) {
-    console.warn(`[sync] missing ${src} — the corresponding feature will show as unavailable`);
+    console.warn(`[sync] missing ${src}, the corresponding feature will show as unavailable`);
     return false;
   }
   mkdirSync(dirname(join(pub, dst)), { recursive: true });
